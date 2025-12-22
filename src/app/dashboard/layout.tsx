@@ -1,5 +1,5 @@
 import { DashboardNav } from "../../components/dashboard/nav"; 
-import { Store, User } from "lucide-react"; 
+import { Leaf, User } from "lucide-react"; 
 
 export default function DashboardLayout({
   children,
@@ -17,7 +17,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-8">
             {/* Logo - Renamed to LeafStore */}
             <div className="flex items-center gap-2 text-indigo-400">
-              <Store className="w-6 h-6" />
+              <Leaf className="w-6 h-6" />
               <span className="font-bold text-lg text-white tracking-wide">LeafStore</span>
             </div>
 
