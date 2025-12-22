@@ -48,7 +48,6 @@ The primary objective was to design and develop a server-side rendered (SSR) app
 | **ORM** | **Prisma** | Database schema & queries |
 | **Styling** | **Tailwind CSS** | Utility-first responsive design |
 | **Icons** | **Lucide React** | Modern UI iconography |
-| **Deployment** | **Vercel** | CI/CD & Hosting |
 
 ---
 
@@ -102,8 +101,7 @@ Open **http://localhost:3000/dashboard** to access the application.
 
 - [x] GitHub Repository with complete source code  
 - [x] Product CRUD functionality  
-- [x] Interactive charts and visualizations  
-- [x] Live deployment on Vercel  
+- [x] Interactive charts and visualizations
 - [x] Comprehensive documentation  
 
 ---
