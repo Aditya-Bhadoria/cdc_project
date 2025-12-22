@@ -1,153 +1,206 @@
-export const dynamic = "force-dynamic";
 import { db } from "../../lib/db";
-import { OverviewCharts } from "../../components/dashboard/overview-charts";
-import { Package, DollarSign, TrendingUp, AlertTriangle, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { 
+  Package, 
+  TrendingUp, 
+  AlertTriangle, 
+  DollarSign, 
+  CalendarDays,
+  ArrowUpRight
+} from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  // 1. Fetch data using the NEW 'inventoryCount' field
-  const [totalProducts, totalStockResult, lowStockCount, recentProducts] = await Promise.all([
-    db.product.count(),
-    db.product.aggregate({
-      _sum: { inventoryCount: true, price: true }, // RENAMED: stock -> inventoryCount
-    }),
-    db.product.count({
-      where: { inventoryCount: { lt: 10 } },       // RENAMED: stock -> inventoryCount
-    }),
-    db.product.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    }),
-  ]);
-
-  const productsByCategory = await db.product.groupBy({
-    by: ['category'],
-    _count: {
-      category: true,
-    },
+  // 1. Fetch Real Data
+  const totalItems = await db.product.count();
+  
+  const inventoryStats = await db.product.aggregate({
+    _sum: { inventoryCount: true },
+  });
+  
+  const lowStockCount = await db.product.count({
+    where: { inventoryCount: { lt: 10 } },
   });
 
-  const chartData = productsByCategory.map((item) => ({
-    name: item.category,
-    value: item._count.category,
-  }));
-
-  // RENAMED: Accessing the new field from the result
-  const totalStock = totalStockResult._sum.inventoryCount || 0;
-
-  // Fetch for value calculation
-  const products = await db.product.findMany({
-    select: { price: true, inventoryCount: true } // RENAMED
+  // Calculate total valuation
+  const allProducts = await db.product.findMany({
+    select: { price: true, inventoryCount: true, category: true },
   });
 
-  // Calculate Total Value using inventoryCount
-  const totalInventoryValue = products.reduce((acc, item) => {
-    return acc + (Number(item.price) * item.inventoryCount); // RENAMED
+  const totalValue = allProducts.reduce((acc, item) => {
+    return acc + (Number(item.price) * item.inventoryCount);
   }, 0);
 
-  const totalStockCount = products.reduce((acc, item) => acc + item.inventoryCount, 0);
+  // Group by category for the chart
+  const categoryCount: Record<string, number> = {};
+  allProducts.forEach((p) => {
+    const cat = p.category || "Uncategorized";
+    categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+  });
 
+  // 2. UI Components
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Inventory Overview</h1>
-        <p className="text-gray-500 mt-2">Welcome back. Here is the current status of your inventory.</p>
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b pb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+          <p className="text-gray-500 mt-2 flex items-center gap-2">
+            <CalendarDays className="w-4 h-4" />
+            Here is what's happening with your inventory today.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <button className="bg-white text-gray-700 px-4 py-2 rounded-lg border shadow-sm text-sm font-medium hover:bg-gray-50 transition-colors">
+            Download Report
+          </button>
+          <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md shadow-indigo-200 text-sm font-medium hover:bg-indigo-700 transition-colors">
+            Add New Item
+          </button>
+        </div>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title="Total Items" 
-          value={totalProducts} 
-          icon={<Package className="text-indigo-600" />} 
-          trend="+12% from last month"
-          trendColor="text-green-600"
+          value={totalItems.toString()} 
+          icon={Package} 
+          trend="+12%"
+          color="blue"
         />
         <StatCard 
-          title="Total Inventory Count" 
-          value={totalStock} 
-          icon={<TrendingUp className="text-purple-600" />} 
-          trend="Units in stock"
-          trendColor="text-gray-600"
+          title="Total Inventory" 
+          value={inventoryStats._sum.inventoryCount?.toString() || "0"} 
+          icon={TrendingUp} 
+          trend="+5.2%"
+          color="indigo"
         />
         <StatCard 
           title="Low Stock Alerts" 
-          value={lowStockCount} 
-          icon={<AlertTriangle className="text-red-600" />} 
-          trend="Requires attention"
+          value={lowStockCount.toString()} 
+          icon={AlertTriangle} 
+          trend="Requires Action"
           trendColor="text-red-600"
+          color="red"
         />
         <StatCard 
           title="Total Valuation" 
-          value={`$${totalInventoryValue.toLocaleString()}`} 
-          icon={<DollarSign className="text-green-600" />} 
-          trend={`${totalStockCount} units total`} 
-          trendColor="text-gray-600"
+          value={`$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
+          icon={DollarSign} 
+          trend="+2.4%"
+          color="green"
         />
       </div>
 
-      <OverviewCharts categoryData={chartData} />
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Category Chart */}
+        <div className="lg:col-span-1 bg-white rounded-2xl border shadow-sm p-6 flex flex-col">
+          <h3 className="font-semibold text-gray-900 mb-6">Inventory by Category</h3>
+          <div className="flex-1 flex flex-col justify-center space-y-4">
+            {Object.entries(categoryCount).map(([cat, count], index) => {
+               // Calculate percentage
+               const percentage = Math.round((count / totalItems) * 100);
+               const colors = ["bg-blue-500", "bg-indigo-500", "bg-purple-500", "bg-pink-500", "bg-teal-500"];
+               const colorClass = colors[index % colors.length];
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <div className="p-6 border-b flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Recently Added Items</h3>
-          {/* UPDATED LINK: Points to the new inventory folder */}
-          <Link href="/dashboard/inventory" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
-            View All <ArrowRight className="w-4 h-4 ml-1" />
-          </Link>
+               return (
+                 <div key={cat} className="group">
+                   <div className="flex justify-between text-sm mb-1">
+                     <span className="text-gray-600 font-medium capitalize">{cat}</span>
+                     <span className="text-gray-400">{count} items ({percentage}%)</span>
+                   </div>
+                   <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                     <div 
+                        className={`h-full rounded-full ${colorClass} transition-all duration-500 ease-out`} 
+                        style={{ width: `${percentage}%` }}
+                     />
+                   </div>
+                 </div>
+               )
+            })}
+          </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600 font-medium">
-              <tr>
-                <th className="px-6 py-4">Item Name</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Price</th>
-                <th className="px-6 py-4 text-right">Added</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {recentProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        product.status === "ACTIVE"
-                          ? "bg-green-100 text-green-800"
-                          : product.status === "DRAFT"
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {product.status}
-                    </span>
-                  </td>
-                  {/* SAFETY FIX: Wrap price in Number() */}
-                  <td className="px-6 py-4 text-gray-600">${Number(product.price).toFixed(2)}</td>
-                  <td className="px-6 py-4 text-right text-gray-500">
-                    {new Date(product.createdAt).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        {/* Sales Performance (Mock Data visualized better) */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border shadow-sm p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-semibold text-gray-900">Weekly Performance</h3>
+            <select className="text-sm border-none bg-gray-50 rounded-md px-2 py-1 text-gray-500 focus:ring-0">
+              <option>Last 7 Days</option>
+              <option>Last 30 Days</option>
+            </select>
+          </div>
+          
+          <div className="h-64 flex items-end justify-between gap-2 sm:gap-4 mt-8">
+             {/* Mock Bars */}
+             {[45, 78, 52, 34, 67, 89, 56].map((h, i) => {
+               const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+               return (
+                 <div key={i} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
+                   <div className="relative w-full flex items-end justify-center h-full">
+                      {/* Tooltip */}
+                      <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+                        ${h * 120} Sales
+                      </div>
+                      {/* Bar */}
+                      <div 
+                        className={`w-full max-w-[40px] rounded-t-lg transition-all duration-300 ${
+                          i === 5 ? "bg-indigo-600 shadow-lg shadow-indigo-200" : "bg-indigo-100 hover:bg-indigo-300"
+                        }`}
+                        style={{ height: `${h}%` }}
+                      ></div>
+                   </div>
+                   <span className="text-xs text-gray-400 font-medium">{days[i]}</span>
+                 </div>
+               )
+             })}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function StatCard({ title, value, icon, trend, trendColor }: any) {
+// 3. Reusable Stats Card Component
+function StatCard({ 
+  title, 
+  value, 
+  icon: Icon, 
+  trend, 
+  color, 
+  trendColor 
+}: { 
+  title: string; 
+  value: string; 
+  icon: any; 
+  trend: string; 
+  color: "blue" | "indigo" | "red" | "green";
+  trendColor?: string;
+}) {
+  const colors = {
+    blue: "bg-blue-50 text-blue-600",
+    indigo: "bg-indigo-50 text-indigo-600",
+    red: "bg-red-50 text-red-600",
+    green: "bg-green-50 text-green-600",
+  };
+
   return (
-    <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col justify-between">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <h3 className="text-2xl font-bold text-gray-900 mt-1">{value}</h3>
+    <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex justify-between items-start">
+        <div className={`p-3 rounded-xl ${colors[color]}`}>
+          <Icon className="w-6 h-6" />
         </div>
-        <div className="p-2 bg-gray-50 rounded-lg">{icon}</div>
+        <div className={`flex items-center text-xs font-medium ${trendColor || "text-green-600"} bg-green-50 px-2 py-1 rounded-full`}>
+           {trend === "Requires Action" ? null : <ArrowUpRight className="w-3 h-3 mr-1" />}
+           {trend}
+        </div>
       </div>
-      <p className={`text-xs font-medium ${trendColor}`}>{trend}</p>
+      <div className="mt-4">
+        <p className="text-gray-500 text-sm font-medium">{title}</p>
+        <h3 className="text-2xl font-bold text-gray-900 mt-1">{value}</h3>
+      </div>
     </div>
   );
 }
