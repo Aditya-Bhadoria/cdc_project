@@ -72,8 +72,8 @@ export default async function ProductsPage(props: ProductsPageProps) {
                 <th className="px-6 py-4">Item Details</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Inventory</th>
-                <th className="px-6 py-4">Price</th>
                 <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Price</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -118,7 +118,7 @@ export default async function ProductsPage(props: ProductsPageProps) {
                     <td className="px-6 py-4">
                       <StatusBadge status={product.status} />
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-gray-600">
                       <div className="flex items-center gap-2">
                         {/* UPDATED: Checks 'inventoryCount' */}
                         <span>{product.inventoryCount}</span>
@@ -127,12 +127,12 @@ export default async function ProductsPage(props: ProductsPageProps) {
                         )}
                       </div>
                     </td>
+                    <td className="px-6 py-4 text-gray-600 capitalize">
+                      {product.category}
+                    </td>
                     <td className="px-6 py-4 font-medium text-gray-700">
                       {/* SAFETY: Convert Decimal to Number */}
                       ${Number(product.price).toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 capitalize">
-                      {product.category}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end items-center gap-2">

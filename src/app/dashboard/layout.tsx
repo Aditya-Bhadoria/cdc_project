@@ -7,7 +7,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    // CHANGED: flex-col makes the layout vertical (Header Top, Content Bottom)
     <div className="min-h-screen flex flex-col bg-gray-50">
       
       {/* TOP NAVIGATION BAR */}
@@ -16,21 +15,22 @@ export default function DashboardLayout({
           
           {/* Left: Logo & Nav Links */}
           <div className="flex items-center gap-8">
-            {/* Logo */}
+            {/* Logo - Renamed to LeafStore */}
             <div className="flex items-center gap-2 text-indigo-400">
               <Store className="w-6 h-6" />
-              <span className="font-bold text-lg text-white tracking-wide">NexusStore</span>
+              <span className="font-bold text-lg text-white tracking-wide">LeafStore</span>
             </div>
 
-            {/* Navigation Links (Hidden on very small screens if needed) */}
+            {/* Navigation Links */}
             <div className="hidden md:block">
               <DashboardNav />
             </div>
           </div>
 
-          {/* Right: User Profile (Compact Version) */}
+          {/* Right: User Profile */}
           <div className="flex items-center gap-3">
-            <div className="flex flex-col items-end hidden sm:block">
+            {/* FIXED: Changed 'sm:block' to 'sm:flex' so flex-col works correctly */}
+            <div className="hidden sm:flex flex-col items-end">
               <span className="text-sm font-medium text-white">Admin User</span>
               <span className="text-xs text-slate-400">admin@example.com</span>
             </div>
@@ -43,7 +43,6 @@ export default function DashboardLayout({
       </header>
 
       {/* MAIN CONTENT AREA */}
-      {/* Centered container with padding */}
       <main className="flex-1 p-8">
         <div className="max-w-7xl mx-auto">
           {children}
