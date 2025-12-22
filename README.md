@@ -1,7 +1,5 @@
 # 🍃 LeafStore — Server-Rendered Product Management Dashboard
 
-![LeafStore Banner](https://via.placeholder.com/1200x600/0f172a/10b981?text=LeafStore+Admin+Dashboard)
-
 **LeafStore** is a robust, server-side rendered (SSR) administrative dashboard designed to manage e-commerce products efficiently. Built to address the need for fast page loads and improved SEO, this application allows administrators to visualize sales data and perform complex inventory operations seamlessly.
 
 ---
