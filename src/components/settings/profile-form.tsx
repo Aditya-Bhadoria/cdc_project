@@ -1,0 +1,70 @@
+"use client";
+
+import { useState } from "react";
+import { updateProfile } from "../../actions/user";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+
+interface ProfileFormProps {
+  initialName: string;
+  email: string;
+}
+
+export function ProfileForm({ initialName, email }: ProfileFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (formData: FormData) => {
+    setIsLoading(true);
+    const result = await updateProfile(formData);
+    
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <form action={handleSubmit} className="grid gap-4 max-w-xl">
+      {/* Hidden input to identify the user */}
+      <input type="hidden" name="currentEmail" value={email} />
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+        <input 
+          name="name"
+          type="text" 
+          defaultValue={initialName}
+          required
+          className="w-full p-2 border rounded-md text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none" 
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input 
+          name="email"
+          type="email" 
+          defaultValue={email}
+          required
+          className="w-full p-2 border rounded-md text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none" 
+        />
+        <p className="text-xs text-yellow-600 mt-1">
+          ⚠️ Changing this will require you to use the new email at next login.
+        </p>
+      </div>
+
+      <div className="pt-2">
+        <button 
+          type="submit" 
+          disabled={isLoading}
+          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50 text-sm font-medium"
+        >
+          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+          Save Changes
+        </button>
+      </div>
+    </form>
+  );
+}

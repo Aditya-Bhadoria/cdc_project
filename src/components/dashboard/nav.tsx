@@ -9,7 +9,8 @@ export function DashboardNav() {
 
   const links = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    { href: "/dashboard/products", label: "Products", icon: Package },
+    // FIXED: Changed path to '/inventory' and label to 'Inventory'
+    { href: "/dashboard/inventory", label: "Inventory", icon: Package },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
@@ -17,6 +18,7 @@ export function DashboardNav() {
     <nav className="px-4 space-y-2">
       {links.map((link) => {
         const Icon = link.icon;
+        // Logic to determine if this tab is active
         const isActive = link.href === "/dashboard" 
           ? pathname === "/dashboard"
           : pathname.startsWith(link.href);
@@ -27,7 +29,7 @@ export function DashboardNav() {
             href={link.href}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
               isActive
-                ? "bg-blue-50 text-blue-600"
+                ? "bg-indigo-50 text-indigo-600" // Updated color to match your new theme
                 : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
             }`}
           >

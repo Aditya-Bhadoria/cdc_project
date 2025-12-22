@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema, ProductFormData } from "../lib/schemas";
-import { createProductAction, updateProductAction } from "../app/actions"; 
-import { CheckCircle2, ChevronRight, ChevronLeft, Loader2, Image as ImageIcon } from "lucide-react";
+import { productSchema, ProductFormValues } from "../schemas/product"; // Ensure this matches your schema file export
+import { createProduct, updateProduct } from "../actions/products"; 
+import { CheckCircle2, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "../components/image-upload";
 import { toast } from "sonner";
@@ -16,10 +16,11 @@ interface ProductFormProps {
   categories?: string[];
 }
 
+// UPDATED: Field names now match the new database schema
 const steps = [
   { id: 1, name: "Basics", fields: ["name", "description", "category"] },
-  { id: 2, name: "Pricing", fields: ["price", "stock", "sku"] },
-  { id: 3, name: "Media", fields: ["imageUrl"] },
+  { id: 2, name: "Pricing", fields: ["price", "inventoryCount", "sku"] }, // RENAMED: stock -> inventoryCount
+  { id: 3, name: "Media", fields: ["image"] }, // RENAMED: imageUrl -> image
   { id: 4, name: "Review", fields: ["status"] },
 ];
 
@@ -37,34 +38,34 @@ export default function ProductForm({ initialData, productId, categories = [] }:
     watch,
     setValue,
     formState: { errors },
-  } = useForm<ProductFormData>({
+  } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: initialData ? {
       name: initialData.name,
       description: initialData.description,
       category: initialData.category,
-      price: initialData.price,
-      stock: initialData.stock,
+      price: Number(initialData.price),
+      inventoryCount: initialData.inventoryCount, // RENAMED
       sku: initialData.sku,
       status: initialData.status,
-      imageUrl: initialData.imageUrl || "",
+      image: initialData.image || "", // RENAMED
     } : {
       name: "",
       description: "",
       category: "",
       price: 0,
-      stock: 0,
+      inventoryCount: 0, // RENAMED
       sku: "",
       status: "DRAFT",
-      imageUrl: "",
+      image: "", // RENAMED
     },
   });
 
-  const imageUrlValue = watch("imageUrl");
+  // RENAMED: Watch the new field name
+  const imageValue = watch("image");
 
   const next = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault(); 
-
     const fields = steps[currentStep].fields;
     const isValid = await trigger(fields as any);
     if (isValid) setCurrentStep((prev) => prev + 1);
@@ -75,40 +76,47 @@ export default function ProductForm({ initialData, productId, categories = [] }:
     setCurrentStep((prev) => prev - 1);
   };
 
-  const onSubmit = async (data: ProductFormData) => {
+  const onSubmit = async (data: ProductFormValues) => {
     if (isLoading) return;
     setIsLoading(true);
     
+    // Create FormData because our Server Action expects it
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("price", data.price.toString());
+    formData.append("inventoryCount", data.inventoryCount.toString()); // RENAMED
+    formData.append("sku", data.sku);
+    formData.append("status", data.status);
+    formData.append("image", data.image || ""); // RENAMED
+
     let result;
     if (isEditMode && productId) {
-      result = await updateProductAction(productId, data);
+      result = await updateProduct(productId, formData);
     } else {
-      result = await createProductAction(data);
+      result = await createProduct(formData);
     }
 
-    
-
-    if (result.success) {
-      toast.success("Product saved successfully!");
-      router.push("/dashboard/products");
+    if (result?.success !== false) { // Handle void or success object
+      toast.success("Inventory saved successfully!");
+      router.push("/dashboard/inventory"); // UPDATED: Redirect to new folder
     } else {
       setIsLoading(false);
-      const errorMessage =
-      typeof result.error === "string"
-        ? result.error
-        : result.error?._errors?.[0] ?? "Failed to save product";
+      // Safety check for error message format
+      const errorMessage = typeof result?.error === "string" 
+        ? result.error 
+        : "Failed to save product";
       toast.error(errorMessage);
     }
   };
-
-  
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-white rounded-xl shadow-sm border p-8">
       
       <div className="mb-6 text-center">
         <h2 className="text-xl font-bold text-gray-800">
-            {isEditMode ? "Edit Product" : "Create New Product"}
+            {isEditMode ? "Edit Inventory Item" : "Add New Inventory"}
         </h2>
       </div>
 
@@ -118,7 +126,7 @@ export default function ProductForm({ initialData, productId, categories = [] }:
             <div
               className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 index <= currentStep
-                  ? "bg-blue-600 text-white"
+                  ? "bg-indigo-600 text-white" // CHANGED COLOR: Blue -> Indigo
                   : "bg-gray-100 text-gray-500"
               }`}
             >
@@ -133,24 +141,23 @@ export default function ProductForm({ initialData, productId, categories = [] }:
       </div>
 
       <form 
-  onSubmit={handleSubmit(onSubmit, (errors) => {
-    
-    console.log("FORM VALIDATION FAILED:", errors);
-    alert("Please check previous steps for errors.");
-  })} 
-  className="space-y-6"
->
+        onSubmit={handleSubmit(onSubmit, (errors) => {
+          console.log("FORM VALIDATION FAILED:", errors);
+          toast.error("Please check previous steps for errors.");
+        })} 
+        className="space-y-6"
+      >
         
         {currentStep === 0 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
-              <input {...register("name")} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400" />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+              <input {...register("name")} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500" />
               {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea {...register("description")} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400" rows={3} />
+              <textarea {...register("description")} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500" rows={3} />
               {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
             </div>
             <div>
@@ -158,7 +165,7 @@ export default function ProductForm({ initialData, productId, categories = [] }:
               <input 
                 {...register("category")} 
                 list="category-list" 
-                className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400" 
+                className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500" 
                 placeholder="Select or type a new category..." 
                 autoComplete="off"
               />
@@ -177,19 +184,20 @@ export default function ProductForm({ initialData, productId, categories = [] }:
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
-                <input type="number" step="0.01" {...register("price", { valueAsNumber: true })} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400" />
+                <input type="number" step="0.01" {...register("price", { valueAsNumber: true })} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500" />
                 {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
-                <input type="number" {...register("stock", { valueAsNumber: true })} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400" />
-                {errors.stock && <p className="text-red-500 text-sm mt-1">{errors.stock.message}</p>}
+                {/* RENAMED LABEL AND FIELD */}
+                <label className="block text-sm font-medium text-gray-700 mb-1">Inventory Count</label>
+                <input type="number" {...register("inventoryCount", { valueAsNumber: true })} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500" />
+                {errors.inventoryCount && <p className="text-red-500 text-sm mt-1">{errors.inventoryCount.message}</p>}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">SKU (Stock Keeping Unit)</label>
                 <input 
                   {...register("sku")} 
-                  className="w-full p-2 border rounded-md uppercase text-gray-900 placeholder:text-gray-400" 
+                  className="w-full p-2 border rounded-md uppercase text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500" 
                   placeholder="GEN-TSHIRT-001"
                 />
                 {errors.sku && <p className="text-red-500 text-sm mt-1">{errors.sku.message}</p>}
@@ -204,30 +212,30 @@ export default function ProductForm({ initialData, productId, categories = [] }:
               <label className="block text-sm font-medium text-gray-700 mb-4">Product Image</label>
               
               <ImageUpload
-                value={imageUrlValue ? imageUrlValue : ""}
+                value={imageValue ? imageValue : ""}
                 onChange={(url) => {
-                    setValue("imageUrl", url); 
-                    trigger("imageUrl"); 
+                    setValue("image", url); // RENAMED
+                    trigger("image"); 
                 }}
-                onRemove={() => setValue("imageUrl", "")}
+                onRemove={() => setValue("image", "")}
               />
               
-              {errors.imageUrl && <p className="text-red-500 text-sm mt-1">{errors.imageUrl.message}</p>}
+              {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>}
             </div>
           </div>
         )}
 
         {currentStep === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-             <div className="bg-blue-50 p-4 rounded-md border border-blue-100 text-sm text-blue-800">
-              <p>You are about to {isEditMode ? "update this product" : "create a new product"}.</p>
+             <div className="bg-indigo-50 p-4 rounded-md border border-indigo-100 text-sm text-indigo-800">
+              <p>You are about to {isEditMode ? "update this item" : "create a new inventory item"}.</p>
             </div>
             <div>
                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                <div className="flex gap-4">
                  {["DRAFT", "ACTIVE", "ARCHIVED"].map((status) => (
-                    <label key={status} className="flex items-center gap-2">
-                        <input type="radio" value={status} {...register("status")} /> 
+                    <label key={status} className="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" value={status} {...register("status")} className="text-indigo-600 focus:ring-indigo-500" /> 
                         <span className="text-sm capitalize">{status.toLowerCase()}</span>
                     </label>
                  ))}
@@ -250,7 +258,7 @@ export default function ProductForm({ initialData, productId, categories = [] }:
             <button
               type="button"
               onClick={next}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
             >
               Next Step <ChevronRight className="w-4 h-4 inline ml-1" />
             </button>
@@ -261,7 +269,7 @@ export default function ProductForm({ initialData, productId, categories = [] }:
               className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isEditMode ? "Update Product" : "Create Product"}
+              {isEditMode ? "Update Inventory" : "Save Inventory"}
             </button>
           )}
         </div>

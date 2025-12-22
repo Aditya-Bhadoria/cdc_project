@@ -6,18 +6,21 @@ import { db } from '../lib/db';
 import { productSchema } from '../schemas/product'; 
 
 export async function createProduct(formData: FormData) {
-    console.log("Action Triggered: createProduct");
+  console.log("Action Triggered: createProduct");
+  
+  // 1. Extract data using NEW names
   const rawData = {
     name: formData.get('name'),
     description: formData.get('description'),
     price: formData.get('price'),
-    stock: formData.get('stock'),
+    inventoryCount: formData.get('inventoryCount'), // RENAMED
     category: formData.get('category'),
-    imageUrl: formData.get('imageUrl'),
+    image: formData.get('image'),                   // RENAMED
     sku: formData.get('sku'),
     status: formData.get('status'),
   };
 
+  // 2. Validate
   const validated = productSchema.safeParse(rawData);
 
   if (!validated.success) {
@@ -28,15 +31,16 @@ export async function createProduct(formData: FormData) {
     };
   }
 
+  // 3. Save to Database
   try {
     await db.product.create({
       data: {
         name: validated.data.name,
         description: validated.data.description,
         price: validated.data.price, 
-        stock: validated.data.stock, 
+        inventoryCount: validated.data.inventoryCount, // RENAMED
         category: validated.data.category,
-        imageUrl: validated.data.imageUrl || "",
+        image: validated.data.image || "",             // RENAMED
         status: validated.data.status,
         sku: validated.data.sku
       },
@@ -46,9 +50,10 @@ export async function createProduct(formData: FormData) {
     return { success: false, message: "Failed to create product" };
   }
 
-
-  revalidatePath('/dashboard/products');
-  redirect('/dashboard/products');
+  // 4. Update the UI
+  // Note: We changed this path to 'inventory' to match your new project structure
+  revalidatePath('/dashboard/inventory');
+  redirect('/dashboard/inventory');
 }
 
 export async function getProducts() {
@@ -79,10 +84,11 @@ export async function updateProduct(id: string, formData: FormData) {
     name: formData.get('name'),
     description: formData.get('description'),
     price: formData.get('price'),
-    stock: formData.get('stock'),
+    inventoryCount: formData.get('inventoryCount'), // RENAMED
     category: formData.get('category'),
-    imageUrl: formData.get('imageUrl'),
-    sku: formData.get('sku')
+    image: formData.get('image'),                   // RENAMED
+    sku: formData.get('sku'),
+    status: formData.get('status'), // Don't forget status in update!
   };
 
   const validated = productSchema.safeParse(rawData);
@@ -100,8 +106,8 @@ export async function updateProduct(id: string, formData: FormData) {
     return { success: false, message: "Failed to update product" };
   }
 
-  revalidatePath('/dashboard/products');
-  redirect('/dashboard/products');
+  revalidatePath('/dashboard/inventory');
+  redirect('/dashboard/inventory');
 }
 
 export async function deleteProduct(id: string) {
@@ -110,7 +116,7 @@ export async function deleteProduct(id: string) {
       where: { id },
     });
     
-    revalidatePath('/dashboard/products');
+    revalidatePath('/dashboard/inventory');
     return { success: true };
   } catch (error) {
     return { success: false, message: "Failed to delete product" };

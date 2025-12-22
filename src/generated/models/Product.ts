@@ -28,12 +28,12 @@ export type AggregateProduct = {
 
 export type ProductAvgAggregateOutputType = {
   price: runtime.Decimal | null
-  stock: number | null
+  inventoryCount: number | null
 }
 
 export type ProductSumAggregateOutputType = {
   price: runtime.Decimal | null
-  stock: number | null
+  inventoryCount: number | null
 }
 
 export type ProductMinAggregateOutputType = {
@@ -41,11 +41,11 @@ export type ProductMinAggregateOutputType = {
   name: string | null
   description: string | null
   price: runtime.Decimal | null
-  stock: number | null
+  inventoryCount: number | null
   category: string | null
-  imageUrl: string | null
+  image: string | null
   sku: string | null
-  status: string | null
+  status: $Enums.ProductStatus | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -55,11 +55,11 @@ export type ProductMaxAggregateOutputType = {
   name: string | null
   description: string | null
   price: runtime.Decimal | null
-  stock: number | null
+  inventoryCount: number | null
   category: string | null
-  imageUrl: string | null
+  image: string | null
   sku: string | null
-  status: string | null
+  status: $Enums.ProductStatus | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,9 +69,9 @@ export type ProductCountAggregateOutputType = {
   name: number
   description: number
   price: number
-  stock: number
+  inventoryCount: number
   category: number
-  imageUrl: number
+  image: number
   sku: number
   status: number
   createdAt: number
@@ -82,12 +82,12 @@ export type ProductCountAggregateOutputType = {
 
 export type ProductAvgAggregateInputType = {
   price?: true
-  stock?: true
+  inventoryCount?: true
 }
 
 export type ProductSumAggregateInputType = {
   price?: true
-  stock?: true
+  inventoryCount?: true
 }
 
 export type ProductMinAggregateInputType = {
@@ -95,9 +95,9 @@ export type ProductMinAggregateInputType = {
   name?: true
   description?: true
   price?: true
-  stock?: true
+  inventoryCount?: true
   category?: true
-  imageUrl?: true
+  image?: true
   sku?: true
   status?: true
   createdAt?: true
@@ -109,9 +109,9 @@ export type ProductMaxAggregateInputType = {
   name?: true
   description?: true
   price?: true
-  stock?: true
+  inventoryCount?: true
   category?: true
-  imageUrl?: true
+  image?: true
   sku?: true
   status?: true
   createdAt?: true
@@ -123,9 +123,9 @@ export type ProductCountAggregateInputType = {
   name?: true
   description?: true
   price?: true
-  stock?: true
+  inventoryCount?: true
   category?: true
-  imageUrl?: true
+  image?: true
   sku?: true
   status?: true
   createdAt?: true
@@ -224,11 +224,11 @@ export type ProductGroupByOutputType = {
   name: string
   description: string
   price: runtime.Decimal
-  stock: number
+  inventoryCount: number
   category: string
-  imageUrl: string
+  image: string
   sku: string
-  status: string
+  status: $Enums.ProductStatus
   createdAt: Date
   updatedAt: Date
   _count: ProductCountAggregateOutputType | null
@@ -261,11 +261,11 @@ export type ProductWhereInput = {
   name?: Prisma.StringFilter<"Product"> | string
   description?: Prisma.StringFilter<"Product"> | string
   price?: Prisma.DecimalFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock?: Prisma.IntFilter<"Product"> | number
+  inventoryCount?: Prisma.IntFilter<"Product"> | number
   category?: Prisma.StringFilter<"Product"> | string
-  imageUrl?: Prisma.StringFilter<"Product"> | string
+  image?: Prisma.StringFilter<"Product"> | string
   sku?: Prisma.StringFilter<"Product"> | string
-  status?: Prisma.StringFilter<"Product"> | string
+  status?: Prisma.EnumProductStatusFilter<"Product"> | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
 }
@@ -275,9 +275,9 @@ export type ProductOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  stock?: Prisma.SortOrder
+  inventoryCount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -293,10 +293,10 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Product"> | string
   description?: Prisma.StringFilter<"Product"> | string
   price?: Prisma.DecimalFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock?: Prisma.IntFilter<"Product"> | number
+  inventoryCount?: Prisma.IntFilter<"Product"> | number
   category?: Prisma.StringFilter<"Product"> | string
-  imageUrl?: Prisma.StringFilter<"Product"> | string
-  status?: Prisma.StringFilter<"Product"> | string
+  image?: Prisma.StringFilter<"Product"> | string
+  status?: Prisma.EnumProductStatusFilter<"Product"> | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
 }, "id" | "sku">
@@ -306,9 +306,9 @@ export type ProductOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  stock?: Prisma.SortOrder
+  inventoryCount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -328,11 +328,11 @@ export type ProductScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Product"> | string
   description?: Prisma.StringWithAggregatesFilter<"Product"> | string
   price?: Prisma.DecimalWithAggregatesFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock?: Prisma.IntWithAggregatesFilter<"Product"> | number
+  inventoryCount?: Prisma.IntWithAggregatesFilter<"Product"> | number
   category?: Prisma.StringWithAggregatesFilter<"Product"> | string
-  imageUrl?: Prisma.StringWithAggregatesFilter<"Product"> | string
+  image?: Prisma.StringWithAggregatesFilter<"Product"> | string
   sku?: Prisma.StringWithAggregatesFilter<"Product"> | string
-  status?: Prisma.StringWithAggregatesFilter<"Product"> | string
+  status?: Prisma.EnumProductStatusWithAggregatesFilter<"Product"> | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
 }
@@ -342,11 +342,11 @@ export type ProductCreateInput = {
   name: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock: number
+  inventoryCount?: number
   category: string
-  imageUrl: string
+  image: string
   sku: string
-  status: string
+  status?: $Enums.ProductStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -356,11 +356,11 @@ export type ProductUncheckedCreateInput = {
   name: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock: number
+  inventoryCount?: number
   category: string
-  imageUrl: string
+  image: string
   sku: string
-  status: string
+  status?: $Enums.ProductStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -370,11 +370,11 @@ export type ProductUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  inventoryCount?: Prisma.IntFieldUpdateOperationsInput | number
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -384,11 +384,11 @@ export type ProductUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  inventoryCount?: Prisma.IntFieldUpdateOperationsInput | number
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -398,11 +398,11 @@ export type ProductCreateManyInput = {
   name: string
   description: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock: number
+  inventoryCount?: number
   category: string
-  imageUrl: string
+  image: string
   sku: string
-  status: string
+  status?: $Enums.ProductStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -412,11 +412,11 @@ export type ProductUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  inventoryCount?: Prisma.IntFieldUpdateOperationsInput | number
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -426,11 +426,11 @@ export type ProductUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  inventoryCount?: Prisma.IntFieldUpdateOperationsInput | number
   category?: Prisma.StringFieldUpdateOperationsInput | string
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  image?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -440,9 +440,9 @@ export type ProductCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  stock?: Prisma.SortOrder
+  inventoryCount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -451,7 +451,7 @@ export type ProductCountOrderByAggregateInput = {
 
 export type ProductAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
-  stock?: Prisma.SortOrder
+  inventoryCount?: Prisma.SortOrder
 }
 
 export type ProductMaxOrderByAggregateInput = {
@@ -459,9 +459,9 @@ export type ProductMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  stock?: Prisma.SortOrder
+  inventoryCount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -473,9 +473,9 @@ export type ProductMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  stock?: Prisma.SortOrder
+  inventoryCount?: Prisma.SortOrder
   category?: Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  image?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -484,7 +484,7 @@ export type ProductMinOrderByAggregateInput = {
 
 export type ProductSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
-  stock?: Prisma.SortOrder
+  inventoryCount?: Prisma.SortOrder
 }
 
 export type DecimalFieldUpdateOperationsInput = {
@@ -503,6 +503,10 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumProductStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ProductStatus
+}
+
 
 
 export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -510,9 +514,9 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name?: boolean
   description?: boolean
   price?: boolean
-  stock?: boolean
+  inventoryCount?: boolean
   category?: boolean
-  imageUrl?: boolean
+  image?: boolean
   sku?: boolean
   status?: boolean
   createdAt?: boolean
@@ -524,9 +528,9 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   description?: boolean
   price?: boolean
-  stock?: boolean
+  inventoryCount?: boolean
   category?: boolean
-  imageUrl?: boolean
+  image?: boolean
   sku?: boolean
   status?: boolean
   createdAt?: boolean
@@ -538,9 +542,9 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   name?: boolean
   description?: boolean
   price?: boolean
-  stock?: boolean
+  inventoryCount?: boolean
   category?: boolean
-  imageUrl?: boolean
+  image?: boolean
   sku?: boolean
   status?: boolean
   createdAt?: boolean
@@ -552,16 +556,16 @@ export type ProductSelectScalar = {
   name?: boolean
   description?: boolean
   price?: boolean
-  stock?: boolean
+  inventoryCount?: boolean
   category?: boolean
-  imageUrl?: boolean
+  image?: boolean
   sku?: boolean
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "stock" | "category" | "imageUrl" | "sku" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "inventoryCount" | "category" | "image" | "sku" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 
 export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Product"
@@ -571,11 +575,11 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     name: string
     description: string
     price: runtime.Decimal
-    stock: number
+    inventoryCount: number
     category: string
-    imageUrl: string
+    image: string
     sku: string
-    status: string
+    status: $Enums.ProductStatus
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["product"]>
@@ -1005,11 +1009,11 @@ export interface ProductFieldRefs {
   readonly name: Prisma.FieldRef<"Product", 'String'>
   readonly description: Prisma.FieldRef<"Product", 'String'>
   readonly price: Prisma.FieldRef<"Product", 'Decimal'>
-  readonly stock: Prisma.FieldRef<"Product", 'Int'>
+  readonly inventoryCount: Prisma.FieldRef<"Product", 'Int'>
   readonly category: Prisma.FieldRef<"Product", 'String'>
-  readonly imageUrl: Prisma.FieldRef<"Product", 'String'>
+  readonly image: Prisma.FieldRef<"Product", 'String'>
   readonly sku: Prisma.FieldRef<"Product", 'String'>
-  readonly status: Prisma.FieldRef<"Product", 'String'>
+  readonly status: Prisma.FieldRef<"Product", 'ProductStatus'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>
 }

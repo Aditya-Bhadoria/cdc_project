@@ -5,13 +5,14 @@ import { Package, DollarSign, TrendingUp, AlertTriangle, ArrowRight } from "luci
 import Link from "next/link";
 
 export default async function DashboardPage() {
+  // 1. Fetch data using the NEW 'inventoryCount' field
   const [totalProducts, totalStockResult, lowStockCount, recentProducts] = await Promise.all([
     db.product.count(),
     db.product.aggregate({
-      _sum: { stock: true, price: true }, 
+      _sum: { inventoryCount: true, price: true }, // RENAMED: stock -> inventoryCount
     }),
     db.product.count({
-      where: { stock: { lt: 10 } }, 
+      where: { inventoryCount: { lt: 10 } },       // RENAMED: stock -> inventoryCount
     }),
     db.product.findMany({
       orderBy: { createdAt: "desc" },
@@ -31,37 +32,41 @@ export default async function DashboardPage() {
     value: item._count.category,
   }));
 
-  const totalStock = totalStockResult._sum.stock || 0;
+  // RENAMED: Accessing the new field from the result
+  const totalStock = totalStockResult._sum.inventoryCount || 0;
 
+  // Fetch for value calculation
   const products = await db.product.findMany({
-    select: { price: true, stock: true }
+    select: { price: true, inventoryCount: true } // RENAMED
   });
 
+  // Calculate Total Value using inventoryCount
   const totalInventoryValue = products.reduce((acc, item) => {
-    return acc + (Number(item.price) * item.stock);
+    return acc + (Number(item.price) * item.inventoryCount); // RENAMED
   }, 0);
 
-  const totalStockCount = products.reduce((acc, item) => acc + item.stock, 0);
+  const totalStockCount = products.reduce((acc, item) => acc + item.inventoryCount, 0);
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-        <p className="text-gray-500 mt-2">Welcome back. Here is what is happening with your store today.</p>
+        <h1 className="text-3xl font-bold text-gray-900">Inventory Overview</h1>
+        <p className="text-gray-500 mt-2">Welcome back. Here is the current status of your inventory.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
-          title="Total Products" 
+          title="Total Items" 
           value={totalProducts} 
-          icon={<Package className="text-blue-600" />} 
+          icon={<Package className="text-indigo-600" />} 
           trend="+12% from last month"
           trendColor="text-green-600"
         />
         <StatCard 
-          title="Total Inventory" 
+          title="Total Inventory Count" 
           value={totalStock} 
           icon={<TrendingUp className="text-purple-600" />} 
-          trend="Items in stock"
+          trend="Units in stock"
           trendColor="text-gray-600"
         />
         <StatCard 
@@ -72,10 +77,10 @@ export default async function DashboardPage() {
           trendColor="text-red-600"
         />
         <StatCard 
-          title="Total Inventory Value" 
+          title="Total Valuation" 
           value={`$${totalInventoryValue.toLocaleString()}`} 
           icon={<DollarSign className="text-green-600" />} 
-          trend={`${totalStockCount} items in stock`} 
+          trend={`${totalStockCount} units total`} 
           trendColor="text-gray-600"
         />
       </div>
@@ -84,8 +89,9 @@ export default async function DashboardPage() {
 
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
         <div className="p-6 border-b flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Recently Added Products</h3>
-          <Link href="/dashboard/products" className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+          <h3 className="text-lg font-semibold text-gray-800">Recently Added Items</h3>
+          {/* UPDATED LINK: Points to the new inventory folder */}
+          <Link href="/dashboard/inventory" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
             View All <ArrowRight className="w-4 h-4 ml-1" />
           </Link>
         </div>
@@ -93,7 +99,7 @@ export default async function DashboardPage() {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 text-gray-600 font-medium">
               <tr>
-                <th className="px-6 py-4">Product Name</th>
+                <th className="px-6 py-4">Item Name</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Price</th>
                 <th className="px-6 py-4 text-right">Added</th>
@@ -116,7 +122,8 @@ export default async function DashboardPage() {
                       {product.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">${product.price.toFixed(2)}</td>
+                  {/* SAFETY FIX: Wrap price in Number() */}
+                  <td className="px-6 py-4 text-gray-600">${Number(product.price).toFixed(2)}</td>
                   <td className="px-6 py-4 text-right text-gray-500">
                     {new Date(product.createdAt).toLocaleDateString()}
                   </td>
