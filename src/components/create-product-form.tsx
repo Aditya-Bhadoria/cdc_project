@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod"; // Import z directly
+import { z } from "zod";
 import { productSchema } from "../schemas/product"; 
 import { createProduct, updateProduct } from "../actions/products"; 
 import { CheckCircle2, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import ImageUpload from "../components/image-upload";
 import { toast } from "sonner";
 
-// FIX 1: Infer the type strictly from the schema so they never mismatch
 type ProductFormValues = z.infer<typeof productSchema>;
 
 interface ProductFormProps {
@@ -34,8 +33,6 @@ export default function ProductForm({ initialData, productId, categories = [] }:
   
   const isEditMode = !!initialData; 
 
-  // FIX 2: Removed <ProductFormValues> generic. 
-  // We let the 'resolver' tell the form what the types are automatically.
   const {
     register,
     handleSubmit,
@@ -80,7 +77,7 @@ export default function ProductForm({ initialData, productId, categories = [] }:
     setCurrentStep((prev) => prev - 1);
   };
 
-  const onSubmit = async (data: any) => { // Type as 'any' to avoid strict checks on submission
+  const onSubmit = async (data: any) => { 
     if (isLoading) return;
     setIsLoading(true);
     
