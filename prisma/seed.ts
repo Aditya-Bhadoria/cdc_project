@@ -18,14 +18,14 @@ async function main() {
 
   const products = [
     {
-      name: 'Wireless Noise-Canceling Headphones',
-      description: 'Premium over-ear headphones with 40-hour battery life and immersive sound quality.',
-      price: 299.99,
-      inventoryCount: 45,
-      sku: 'AUDIO-WH-1000',
+      name: 'NVIDIA GeForce RTX 5090',
+      description: 'Extreme performance for high-end gaming and content creation.',
+      price: 2999.99,
+      inventoryCount: 15,
+      sku: 'NVD-RTX-5090',
       status: 'ACTIVE',
       category: 'Electronics',
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
+      image: 'https://www.primeabgb.com/online-price-reviews-india/asus-tuf-gaming-geforce-rtx-5090-32gb-gddr7-oc-edition-graphic-card-tuf-rtx5090-o32g-gaming/',
     },
     {
       name: 'Ergonomic Office Chair',

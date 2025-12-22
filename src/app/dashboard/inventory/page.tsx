@@ -67,8 +67,9 @@ export default async function InventoryPage() {
                       </div>
                       <div>
                         <p className="font-medium text-slate-200">{product.name}</p>
-                        <p className="text-xs text-slate-500 font-mono uppercase">
-                          {product.id.slice(0, 8)}...
+                        {/* FIXED: Now using the REAL sku from database */}
+                        <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">
+                          {product.sku}
                         </p>
                       </div>
                     </div>
@@ -89,12 +90,12 @@ export default async function InventoryPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-slate-300">{product.inventoryCount}</span>
-                      {product.inventoryCount < 10 && (
+                      {product.inventoryCount < 20 && (
                         <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-lg shadow-rose-500/50" title="Low Stock" />
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-400">
+                  <td className="px-6 py-4 text-grey-400">
                     {product.category || "Uncategorized"}
                   </td>
                   <td className="px-6 py-4 font-medium text-slate-200">
