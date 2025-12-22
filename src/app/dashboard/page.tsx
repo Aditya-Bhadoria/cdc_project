@@ -76,7 +76,7 @@ export default async function DashboardPage() {
           theme="blue"
         />
         <StatCard 
-          title="Total Inventory" 
+          title="Total Purchases" 
           value={inventoryStats._sum.inventoryCount?.toString() || "0"} 
           icon={TrendingUp} 
           trend="+5.2%"
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
           theme="rose"
         />
         <StatCard 
-          title="Total Valuation" 
+          title="Total Transaction" 
           value={`$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
           icon={DollarSign} 
           trend="+2.4%"
