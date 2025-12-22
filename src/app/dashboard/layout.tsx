@@ -1,33 +1,46 @@
-import { LogoutButton } from "../../components/dashboard/logout-button"; 
+// FIXED: Importing from 'nav' instead of 'sidenav'
 import { DashboardNav } from "../../components/dashboard/nav"; 
-import { UserCircle } from "lucide-react";
-import { Toaster } from 'sonner';
+import { Store } from "lucide-react"; 
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      <Toaster position="top-right" richColors />
-      <aside className="w-64 bg-white border-r fixed h-full z-10 hidden md:flex flex-col">
-        <div className="p-6 border-b">
-          <h1 className="text-xl font-bold text-blue-600">NexusStore</h1>
-        </div>
+    <div className="flex min-h-screen">
+      {/* SIDEBAR - Dark Slate Background */}
+      <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col fixed inset-y-0 z-50">
         
-        <div className="flex-1 overflow-y-auto py-4">
-           <DashboardNav />
+        {/* Logo Section */}
+        <div className="h-16 flex items-center px-6 border-b border-slate-800">
+          <div className="flex items-center gap-2 text-indigo-400">
+            <Store className="w-6 h-6" />
+            <span className="font-bold text-lg text-white tracking-wide">NexusStore</span>
+          </div>
         </div>
 
-        <div className="p-4 border-t bg-gray-50">
-          <LogoutButton />
+        {/* Navigation Links */}
+        <div className="flex-1 py-6">
+          <DashboardNav />
+        </div>
+
+        {/* User Footer */}
+        <div className="p-4 border-t border-slate-800">
+          <div className="flex items-center gap-3 p-2 rounded-lg bg-slate-800/50">
+            <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+              AU
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">Admin User</p>
+              <p className="text-xs text-slate-400">admin@example.com</p>
+            </div>
+          </div>
         </div>
       </aside>
 
-      <main className="flex-1 md:ml-64 p-8">
-        <header className="flex justify-end items-center mb-8">
-            <div className="flex items-center gap-2 text-gray-700">
-                <span className="text-sm font-medium">Admin User</span>
-                <UserCircle className="w-8 h-8 text-gray-400" />
-            </div>
-        </header>
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 md:ml-64 bg-gray-50">
         {children}
       </main>
     </div>

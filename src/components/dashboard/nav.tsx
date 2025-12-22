@@ -9,16 +9,16 @@ export function DashboardNav() {
 
   const links = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-    // FIXED: Changed path to '/inventory' and label to 'Inventory'
     { href: "/dashboard/inventory", label: "Inventory", icon: Package },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
   return (
-    <nav className="px-4 space-y-2">
+    <nav className="px-3 space-y-1">
       {links.map((link) => {
         const Icon = link.icon;
-        // Logic to determine if this tab is active
+        
+        // Check if active
         const isActive = link.href === "/dashboard" 
           ? pathname === "/dashboard"
           : pathname.startsWith(link.href);
@@ -27,14 +27,15 @@ export function DashboardNav() {
           <Link
             key={link.href}
             href={link.href}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
               isActive
-                ? "bg-indigo-50 text-indigo-600" // Updated color to match your new theme
-                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/20" // Active: Bright Blue & White Text
+                : "text-slate-400 hover:bg-slate-800 hover:text-white"      // Inactive: Light Gray -> White on hover
             }`}
           >
-            <Icon size={20} />
-            <span className="font-medium">{link.label}</span>
+            {/* Icon color logic */}
+            <Icon size={20} className={isActive ? "text-indigo-100" : "group-hover:text-white transition-colors"} />
+            <span className="font-medium text-sm">{link.label}</span>
           </Link>
         );
       })}
