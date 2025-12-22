@@ -14,7 +14,17 @@ export async function createProductAction(data: ProductFormData) {
 
   try {
     await db.product.create({
-      data: result.data,
+      data: {
+        name: result.data.name,
+        description: result.data.description,
+        category: result.data.category,
+        price: result.data.price,
+        sku: result.data.sku,
+        status: result.data.status,
+        
+        image: result.data.imageUrl,     
+        inventoryCount: result.data.stock 
+      },
     });
     return { success: true };
   } catch (e) {
