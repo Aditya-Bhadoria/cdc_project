@@ -14,7 +14,6 @@ export function DashboardNav() {
   ];
 
   return (
-    // CHANGED: "flex items-center gap-2" makes links horizontal
     <nav className="flex items-center gap-2">
       {links.map((link) => {
         const Icon = link.icon;
@@ -26,7 +25,6 @@ export function DashboardNav() {
           <Link
             key={link.href}
             href={link.href}
-            // CHANGED: Adjusted padding for horizontal bar
             className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
               isActive
                 ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20"

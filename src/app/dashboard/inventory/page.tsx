@@ -12,7 +12,6 @@ export default async function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header Bar */}
       <div className="flex justify-between items-center bg-slate-900 p-4 rounded-xl border border-slate-800">
         <div>
           <h1 className="text-xl font-bold text-white">Inventory Items</h1>
@@ -33,7 +32,6 @@ export default async function InventoryPage() {
         </div>
       </div>
 
-      {/* Dark Table */}
       <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
@@ -67,7 +65,6 @@ export default async function InventoryPage() {
                       </div>
                       <div>
                         <p className="font-medium text-slate-200">{product.name}</p>
-                        {/* FIXED: Now using the REAL sku from database */}
                         <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">
                           {product.sku}
                         </p>
@@ -109,7 +106,12 @@ export default async function InventoryPage() {
                       >
                         <Pencil size={18} />
                       </Link>
-                      <form action={deleteProduct.bind(null, product.id)}>
+                      <form
+                        action={async () => {
+                          "use server";
+                          await deleteProduct(product.id);
+                        }}
+                      >
                         <button className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors">
                           <Trash2 size={18} />
                         </button>

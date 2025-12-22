@@ -1,9 +1,10 @@
 "use client";
-
+import { z } from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productSchema, ProductFormValues } from "../schemas/product"; // Ensure this matches your schema file export
+import { productSchema } from "../schemas/product"; 
+type ProductFormValues = z.infer<typeof productSchema>;
 import { createProduct, updateProduct } from "../actions/products"; 
 import { CheckCircle2, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -16,11 +17,10 @@ interface ProductFormProps {
   categories?: string[];
 }
 
-// UPDATED: Field names now match the new database schema
 const steps = [
   { id: 1, name: "Basics", fields: ["name", "description", "category"] },
-  { id: 2, name: "Pricing", fields: ["price", "inventoryCount", "sku"] }, // RENAMED: stock -> inventoryCount
-  { id: 3, name: "Media", fields: ["image"] }, // RENAMED: imageUrl -> image
+  { id: 2, name: "Pricing", fields: ["price", "inventoryCount", "sku"] },
+  { id: 3, name: "Media", fields: ["image"] }, 
   { id: 4, name: "Review", fields: ["status"] },
 ];
 
@@ -45,23 +45,22 @@ export default function ProductForm({ initialData, productId, categories = [] }:
       description: initialData.description,
       category: initialData.category,
       price: Number(initialData.price),
-      inventoryCount: initialData.inventoryCount, // RENAMED
+      inventoryCount: initialData.inventoryCount, 
       sku: initialData.sku,
       status: initialData.status,
-      image: initialData.image || "", // RENAMED
+      image: initialData.image || "", 
     } : {
       name: "",
       description: "",
       category: "",
       price: 0,
-      inventoryCount: 0, // RENAMED
+      inventoryCount: 0, 
       sku: "",
       status: "DRAFT",
-      image: "", // RENAMED
+      image: "", 
     },
   });
 
-  // RENAMED: Watch the new field name
   const imageValue = watch("image");
 
   const next = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -80,30 +79,29 @@ export default function ProductForm({ initialData, productId, categories = [] }:
     if (isLoading) return;
     setIsLoading(true);
     
-    // Create FormData because our Server Action expects it
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("category", data.category);
     formData.append("price", data.price.toString());
-    formData.append("inventoryCount", data.inventoryCount.toString()); // RENAMED
+    formData.append("inventoryCount", data.inventoryCount.toString()); 
     formData.append("sku", data.sku);
     formData.append("status", data.status);
-    formData.append("image", data.image || ""); // RENAMED
+    formData.append("image", data.image || ""); 
 
-    let result;
+    let result: any; 
+    
     if (isEditMode && productId) {
       result = await updateProduct(productId, formData);
     } else {
       result = await createProduct(formData);
     }
 
-    if (result?.success !== false) { // Handle void or success object
+    if (result?.success) { 
       toast.success("Inventory saved successfully!");
-      router.push("/dashboard/inventory"); // UPDATED: Redirect to new folder
+      router.push("/dashboard/inventory");
     } else {
       setIsLoading(false);
-      // Safety check for error message format
       const errorMessage = typeof result?.error === "string" 
         ? result.error 
         : "Failed to save product";
@@ -126,7 +124,7 @@ export default function ProductForm({ initialData, productId, categories = [] }:
             <div
               className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 index <= currentStep
-                  ? "bg-indigo-600 text-white" // CHANGED COLOR: Blue -> Indigo
+                  ? "bg-indigo-600 text-white" 
                   : "bg-gray-100 text-gray-500"
               }`}
             >
@@ -188,7 +186,6 @@ export default function ProductForm({ initialData, productId, categories = [] }:
                 {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>}
               </div>
               <div>
-                {/* RENAMED LABEL AND FIELD */}
                 <label className="block text-sm font-medium text-gray-700 mb-1">Inventory Count</label>
                 <input type="number" {...register("inventoryCount", { valueAsNumber: true })} className="w-full p-2 border rounded-md text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500" />
                 {errors.inventoryCount && <p className="text-red-500 text-sm mt-1">{errors.inventoryCount.message}</p>}
@@ -214,7 +211,7 @@ export default function ProductForm({ initialData, productId, categories = [] }:
               <ImageUpload
                 value={imageValue ? imageValue : ""}
                 onChange={(url) => {
-                    setValue("image", url); // RENAMED
+                    setValue("image", url); 
                     trigger("image"); 
                 }}
                 onRemove={() => setValue("image", "")}

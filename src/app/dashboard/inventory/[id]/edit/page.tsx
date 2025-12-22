@@ -2,7 +2,6 @@ import { db } from "../../../../../lib/db";
 import { notFound } from "next/navigation";
 import { ProductForm } from "../../../../../components/inventory/product-form"; 
 
-// FIXED: Define params as a Promise
 interface PageProps {
   params: Promise<{
     id: string;
@@ -10,7 +9,6 @@ interface PageProps {
 }
 
 export default async function EditProductPage({ params }: PageProps) {
-  // FIXED: Await the params to get the ID
   const { id } = await params;
 
   const product = await db.product.findUnique({
@@ -28,7 +26,6 @@ export default async function EditProductPage({ params }: PageProps) {
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* We pass 'formattedProduct' instead of 'product' to avoid the error */}
       <ProductForm initialData={formattedProduct} isEdit={true} />
     </div>
   );

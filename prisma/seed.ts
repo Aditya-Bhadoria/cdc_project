@@ -1,16 +1,14 @@
 // @ts-nocheck
-import 'dotenv/config' // <--- THIS LINE FIXES THE PASSWORD ERROR
+import 'dotenv/config' 
 import { PrismaClient } from '../src/generated/client'
 import { hash } from 'bcryptjs'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
-// 1. Setup the connection adapter
 const connectionString = process.env.DATABASE_URL
 const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
 
-// 2. Pass the adapter to Prisma
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
@@ -41,7 +39,7 @@ async function main() {
       name: 'Running Sneakers - Red',
       description: 'Lightweight athletic shoes featuring breathable mesh and shock-absorbing soles for high-impact training.',
       price: 89.00,
-      inventoryCount: 12, // Low stock simulation
+      inventoryCount: 12,
       sku: 'FTWR-RUN-RED',
       status: 'ACTIVE',
       category: 'Fitness',
@@ -71,7 +69,7 @@ async function main() {
       name: 'Mechanical Gaming Keyboard',
       description: 'RGB backlit mechanical keyboard with tactile blue switches and aircraft-grade aluminum frame.',
       price: 110.00,
-      inventoryCount: 5, // Very low stock
+      inventoryCount: 5, 
       sku: 'ELEC-KEY-RGB',
       status: 'ACTIVE',
       category: 'Electronics',
@@ -93,7 +91,7 @@ async function main() {
       price: 24.99,
       inventoryCount: 65,
       sku: 'FIT-BTL-STYL',
-      status: 'DRAFT', // Hidden item
+      status: 'DRAFT',
       category: 'Fitness',
       image: 'https://nestasia.in/cdn/shop/files/waterbottles_3.webp?v=1697635462&width=2000',
     },
@@ -101,7 +99,7 @@ async function main() {
       name: 'Modern Desk Lamp',
       description: 'Adjustable LED desk lamp with touch control brightness and a built-in USB charging port.',
       price: 45.00,
-      inventoryCount: 0, // Out of stock
+      inventoryCount: 0,
       sku: 'HOME-LMP-DSK',
       status: 'ARCHIVED',
       category: 'Furniture',
@@ -129,7 +127,6 @@ async function main() {
     })
   }
 
-  // Create Admin User
   const password = await hash("admin123", 12); 
   
   const user = await prisma.user.upsert({

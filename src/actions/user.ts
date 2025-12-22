@@ -6,12 +6,11 @@ import { hash, compare } from 'bcryptjs';
 
 // 1. Update Profile (Name & Email)
 export async function updateProfile(formData: FormData) {
-  const currentEmail = formData.get('currentEmail') as string; // Who is logged in
-  const newEmail = formData.get('email') as string;            // What they want to change to
+  const currentEmail = formData.get('currentEmail') as string;
+  const newEmail = formData.get('email') as string;         
   const name = formData.get('name') as string;
   
   try {
-    // If changing email, check if it's already taken by someone else
     if (newEmail !== currentEmail) {
       const existingUser = await db.user.findUnique({
         where: { email: newEmail }
@@ -47,18 +46,15 @@ export async function updatePassword(email: string, formData: FormData) {
   }
 
   try {
-    // Fetch the user to get their hashed password
     const user = await db.user.findUnique({ where: { email } });
 
     if (!user) return { success: false, message: "User not found." };
 
-    // Verify the OLD password
     const isPasswordValid = await compare(currentPassword, user.password);
     if (!isPasswordValid) {
       return { success: false, message: "Incorrect current password." };
     }
 
-    // Hash the NEW password
     const hashedPassword = await hash(newPassword, 12);
 
     // Save to DB

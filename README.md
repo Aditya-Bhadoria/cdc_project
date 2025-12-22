@@ -103,5 +103,3 @@ Open **http://localhost:3000/dashboard** to access the application.
 - Create, update, and organize products using validated forms  
 - Monitor sales and stock metrics through interactive visualizations  
 - Deploy confidently with server-side rendering for performance and SEO
-
-

@@ -13,9 +13,9 @@ export async function createProduct(formData: FormData) {
     name: formData.get('name'),
     description: formData.get('description'),
     price: formData.get('price'),
-    inventoryCount: formData.get('inventoryCount'), // RENAMED
+    inventoryCount: formData.get('inventoryCount'),
     category: formData.get('category'),
-    image: formData.get('image'),                   // RENAMED
+    image: formData.get('image'),                  
     sku: formData.get('sku'),
     status: formData.get('status'),
   };
@@ -38,9 +38,9 @@ export async function createProduct(formData: FormData) {
         name: validated.data.name,
         description: validated.data.description,
         price: validated.data.price, 
-        inventoryCount: validated.data.inventoryCount, // RENAMED
+        inventoryCount: validated.data.inventoryCount,
         category: validated.data.category,
-        image: validated.data.image || "",             // RENAMED
+        image: validated.data.image || "",            
         status: validated.data.status,
         sku: validated.data.sku
       },
@@ -51,7 +51,6 @@ export async function createProduct(formData: FormData) {
   }
 
   // 4. Update the UI
-  // Note: We changed this path to 'inventory' to match your new project structure
   revalidatePath('/dashboard/inventory');
   redirect('/dashboard/inventory');
 }
@@ -84,11 +83,11 @@ export async function updateProduct(id: string, formData: FormData) {
     name: formData.get('name'),
     description: formData.get('description'),
     price: formData.get('price'),
-    inventoryCount: formData.get('inventoryCount'), // RENAMED
+    inventoryCount: formData.get('inventoryCount'), 
     category: formData.get('category'),
-    image: formData.get('image'),                   // RENAMED
+    image: formData.get('image'),                  
     sku: formData.get('sku'),
-    status: formData.get('status'), // Don't forget status in update!
+    status: formData.get('status'),
   };
 
   const validated = productSchema.safeParse(rawData);

@@ -5,10 +5,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url line is removed here because it's now in prisma.config.ts
 }
 
-// NEW: Strict types for status
 enum ProductStatus {
   DRAFT
   ACTIVE
@@ -31,17 +29,14 @@ model Product {
   description    String        @db.Text
   price          Decimal       @db.Decimal(10, 2)
   
-  // RENAMED: stock -> inventoryCount
   inventoryCount Int           @default(0)
   
   category       String
   
-  // RENAMED: imageUrl -> image
   image          String
   
   sku            String        @unique
   
-  // CHANGED: String -> Enum
   status         ProductStatus @default(DRAFT)
   
   createdAt      DateTime      @default(now())

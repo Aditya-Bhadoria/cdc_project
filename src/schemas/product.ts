@@ -9,14 +9,12 @@ export const productSchema = z.object({
     .min(0.01, "Price must be greater than 0")
     .positive("Price must be positive"),
     
-  // RENAMED: stock -> inventoryCount
   inventoryCount: z.coerce.number()
     .int("Inventory count must be a whole number")
     .min(0, "Inventory cannot be negative"),
     
   category: z.string().min(1, "Please select a category"),
   
-  // RENAMED: imageUrl -> image
   image: z.string()
     .url("Must be a valid URL")
     .optional()
@@ -24,7 +22,6 @@ export const productSchema = z.object({
   
   sku: z.string().min(3, "SKU is required"),
   
-  // FIXED: Simplified to avoid the red line
   status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
 });
 

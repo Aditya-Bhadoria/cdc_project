@@ -17,7 +17,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [imageMode, setImageMode] = useState<"url" | "file">("url");
   
-  // NEW: State to store the name of the file user picked
   const [fileName, setFileName] = useState<string | null>(null);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -44,7 +43,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     }
   }
 
-  // NEW: Helper to update file name when user picks a file
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -55,7 +53,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
   return (
     <form onSubmit={onSubmit} className="max-w-4xl mx-auto space-y-8">
       
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link 
@@ -93,10 +90,8 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* Basic Details */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
             <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
             <div className="grid gap-2">
@@ -121,7 +116,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
             </div>
           </div>
 
-          {/* Pricing */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
             <h3 className="text-lg font-semibold text-white mb-4">Pricing & Inventory</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -159,10 +153,8 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
           </div>
         </div>
 
-        {/* Right Column */}
         <div className="space-y-6">
           
-          {/* Status */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
             <h3 className="text-lg font-semibold text-white">Status</h3>
             <div className="space-y-3">
@@ -199,7 +191,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
             </div>
           </div>
 
-          {/* Category */}
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
             <h3 className="text-lg font-semibold text-white">Category</h3>
             <div className="grid gap-2">
@@ -223,7 +214,6 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
             </div>
           </div>
           
-           {/* Image Card - FIXED: Custom File Input */}
            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
             <h3 className="text-lg font-semibold text-white">Product Image</h3>
             
@@ -263,14 +253,13 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                 <div className="space-y-2">
                    <label className="text-sm font-medium text-slate-300">Select File</label>
                    
-                   {/* HIDDEN INPUT + CUSTOM LABEL */}
                    <div className="relative">
                      <input 
                        type="file" 
                        id="file-upload"
                        name="imageFile" 
                        accept="image/*"
-                       className="hidden" // Hides the ugly default input
+                       className="hidden"
                        onChange={handleFileChange}
                      />
                      <label 
@@ -278,14 +267,12 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                        className="border-2 border-dashed border-slate-700 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-emerald-500 hover:bg-slate-800/50 transition-all cursor-pointer bg-slate-950/50 group"
                      >
                        {fileName ? (
-                         // If file selected, show name + icon
                          <div className="flex flex-col items-center animate-in fade-in zoom-in duration-200">
                            <FileImage className="w-8 h-8 text-emerald-400 mb-2" />
                            <p className="text-sm font-medium text-emerald-400 break-all px-4">{fileName}</p>
                            <p className="text-xs text-slate-500 mt-1">Click to change</p>
                          </div>
                        ) : (
-                         // Default State
                          <>
                            <Upload className="w-8 h-8 text-slate-500 mb-2 group-hover:text-emerald-400 transition-colors" />
                            <p className="text-sm font-medium text-slate-300">Click to upload</p>

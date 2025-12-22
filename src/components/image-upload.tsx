@@ -33,7 +33,6 @@ export default function ImageUpload({
                 <Trash className="w-4 h-4" />
               </button>
             </div>
-             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="object-cover w-full h-full" alt="Image" src={value} />
           </div>
         )}

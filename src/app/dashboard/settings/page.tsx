@@ -22,7 +22,6 @@ export default async function SettingsPage() {
       </div>
 
       <div className="grid gap-6">
-        {/* Profile Section */}
         <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-indigo-500/10 rounded-lg">
@@ -36,7 +35,6 @@ export default async function SettingsPage() {
           <ProfileForm initialName={user.name || ""} email={user.email} />
         </div>
 
-        {/* Store Preferences */}
         <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
            <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-emerald-500/10 rounded-lg">
@@ -73,7 +71,6 @@ export default async function SettingsPage() {
           </div>
         </div>
 
-        {/* Security Section */}
         <div className="bg-slate-900 rounded-xl border border-slate-800 p-6">
            <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-rose-500/10 rounded-lg">

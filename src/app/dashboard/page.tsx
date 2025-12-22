@@ -40,7 +40,6 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-800 pb-6">
         <div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard</h1>
@@ -63,7 +62,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Dark Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title="Total Items" 
@@ -96,7 +94,6 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col">
           <h3 className="font-semibold text-white mb-6">Inventory by Category</h3>
@@ -126,10 +123,6 @@ export default async function DashboardPage() {
 
         <div className="lg:col-span-2">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl h-full p-6">
-             {/* Note: The SalesChart component itself is white inside. 
-                 It will look like a "Card" on the dark background. 
-                 If you want that dark too, we'd need to edit sales-chart.tsx 
-                 but this usually looks fine as a contrast. */}
              <SalesChart />
           </div>
         </div>
