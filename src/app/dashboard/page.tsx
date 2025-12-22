@@ -1,3 +1,4 @@
+import Link from "next/link"; // Imported Link
 import { db } from "../../lib/db";
 import { SalesChart } from "../../components/dashboard/sales-chart";
 import { 
@@ -31,7 +32,6 @@ export default async function DashboardPage() {
     return acc + (Number(item.price) * item.inventoryCount);
   }, 0);
 
-  // Group by category for the chart
   const categoryCount: Record<string, number> = {};
   allProducts.forEach((p) => {
     const cat = p.category || "Uncategorized";
@@ -40,7 +40,6 @@ export default async function DashboardPage() {
 
   // 2. UI Components
   return (
-    // UPDATED: Added gradient background and padding here
     <div className="space-y-8 bg-gradient-to-r from-gray-50 to-gray-200 p-8 min-h-screen">
       
       {/* Header */}
@@ -56,9 +55,14 @@ export default async function DashboardPage() {
           <button className="bg-white/80 backdrop-blur-sm text-gray-700 px-4 py-2 rounded-lg border shadow-sm text-sm font-medium hover:bg-white transition-colors">
             Download Report
           </button>
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md shadow-indigo-200 text-sm font-medium hover:bg-indigo-700 transition-colors">
+          
+          {/* UPDATED: "Add New Item" is now a Link to the create page */}
+          <Link
+            href="/dashboard/inventory/create"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md shadow-indigo-200 text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center"
+          >
             Add New Item
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -97,7 +101,6 @@ export default async function DashboardPage() {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Category Chart */}
         <div className="lg:col-span-1 bg-white/80 backdrop-blur-md rounded-2xl border shadow-sm p-6 flex flex-col">
           <h3 className="font-semibold text-gray-900 mb-6">Inventory by Category</h3>
           <div className="flex-1 flex flex-col justify-center space-y-5">
@@ -124,9 +127,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Sales Performance */}
         <div className="lg:col-span-2">
-          {/* We wrap the chart in a slight transparency to blend with the gradient */}
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl border shadow-sm h-full">
              <SalesChart />
           </div>
@@ -136,7 +137,7 @@ export default async function DashboardPage() {
   );
 }
 
-// Stats Card Component
+// Stats Card Helper
 function StatCard({ 
   title, 
   value, 
