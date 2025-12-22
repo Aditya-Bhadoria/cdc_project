@@ -22,7 +22,6 @@ export default async function DashboardPage() {
     where: { inventoryCount: { lt: 10 } },
   });
 
-  // Calculate total valuation
   const allProducts = await db.product.findMany({
     select: { price: true, inventoryCount: true, category: true },
   });
@@ -41,7 +40,7 @@ export default async function DashboardPage() {
   // 2. UI Components
   return (
     <div className="space-y-8">
-      {/* Header Section */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b pb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
@@ -60,36 +59,36 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid - NOW WITH LIGHT COLORED BOXES */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title="Total Items" 
           value={totalItems.toString()} 
           icon={Package} 
           trend="+12%"
-          color="blue"
+          theme="blue" // Light Blue Box
         />
         <StatCard 
           title="Total Inventory" 
           value={inventoryStats._sum.inventoryCount?.toString() || "0"} 
           icon={TrendingUp} 
           trend="+5.2%"
-          color="indigo"
+          theme="purple" // Light Purple Box
         />
         <StatCard 
           title="Low Stock Alerts" 
           value={lowStockCount.toString()} 
           icon={AlertTriangle} 
           trend="Requires Action"
-          trendColor="text-red-600"
-          color="red"
+          trendColor="text-rose-600"
+          theme="rose" // Light Red/Rose Box
         />
         <StatCard 
           title="Total Valuation" 
           value={`$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
           icon={DollarSign} 
           trend="+2.4%"
-          color="green"
+          theme="emerald" // Light Green Box
         />
       </div>
 
@@ -98,20 +97,19 @@ export default async function DashboardPage() {
         {/* Category Chart */}
         <div className="lg:col-span-1 bg-white rounded-2xl border shadow-sm p-6 flex flex-col">
           <h3 className="font-semibold text-gray-900 mb-6">Inventory by Category</h3>
-          <div className="flex-1 flex flex-col justify-center space-y-4">
+          <div className="flex-1 flex flex-col justify-center space-y-5">
             {Object.entries(categoryCount).map(([cat, count], index) => {
-               // Calculate percentage
                const percentage = Math.round((count / totalItems) * 100);
-               const colors = ["bg-blue-500", "bg-indigo-500", "bg-purple-500", "bg-pink-500", "bg-teal-500"];
+               const colors = ["bg-sky-400", "bg-violet-400", "bg-emerald-400", "bg-amber-400", "bg-rose-400"];
                const colorClass = colors[index % colors.length];
 
                return (
                  <div key={cat} className="group">
-                   <div className="flex justify-between text-sm mb-1">
-                     <span className="text-gray-600 font-medium capitalize">{cat}</span>
-                     <span className="text-gray-400">{count} items ({percentage}%)</span>
+                   <div className="flex justify-between text-sm mb-1.5">
+                     <span className="text-gray-700 font-medium capitalize">{cat}</span>
+                     <span className="text-gray-400 text-xs">{count} items ({percentage}%)</span>
                    </div>
-                   <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                   <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
                      <div 
                         className={`h-full rounded-full ${colorClass} transition-all duration-500 ease-out`} 
                         style={{ width: `${percentage}%` }}
@@ -123,31 +121,37 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Sales Performance (Mock Data visualized better) */}
+        {/* Sales Performance - FIXED VISIBILITY */}
         <div className="lg:col-span-2 bg-white rounded-2xl border shadow-sm p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-semibold text-gray-900">Weekly Performance</h3>
-            <select className="text-sm border-none bg-gray-50 rounded-md px-2 py-1 text-gray-500 focus:ring-0">
+            <select className="text-sm border-none bg-gray-50 rounded-md px-2 py-1 text-gray-500 focus:ring-0 cursor-pointer hover:bg-gray-100">
               <option>Last 7 Days</option>
               <option>Last 30 Days</option>
             </select>
           </div>
           
-          <div className="h-64 flex items-end justify-between gap-2 sm:gap-4 mt-8">
-             {/* Mock Bars */}
+          <div className="h-64 flex items-end justify-between gap-3 sm:gap-4 mt-8">
+             {/* Render Bars */}
              {[45, 78, 52, 34, 67, 89, 56].map((h, i) => {
                const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+               const isPeak = i === 5; // Highlight Saturday as peak
+               
                return (
-                 <div key={i} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
+                 <div key={i} className="flex-1 flex flex-col items-center gap-3 h-full justify-end group cursor-default">
                    <div className="relative w-full flex items-end justify-center h-full">
-                      {/* Tooltip */}
-                      <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+                      {/* Tooltip on Hover */}
+                      <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs rounded py-1.5 px-3 whitespace-nowrap z-10 pointer-events-none transform translate-y-2 group-hover:translate-y-0 duration-200">
                         ${h * 120} Sales
+                        <div className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
                       </div>
-                      {/* Bar */}
+                      
+                      {/* BAR - Using stronger colors (Sky-300/500) so they are visible */}
                       <div 
-                        className={`w-full max-w-[40px] rounded-t-lg transition-all duration-300 ${
-                          i === 5 ? "bg-indigo-600 shadow-lg shadow-indigo-200" : "bg-indigo-100 hover:bg-indigo-300"
+                        className={`w-full max-w-[44px] rounded-t-lg transition-all duration-300 ${
+                          isPeak 
+                            ? "bg-sky-500 shadow-md shadow-sky-200" // Darker blue for peak
+                            : "bg-sky-200 hover:bg-sky-300"          // Lighter blue for others
                         }`}
                         style={{ height: `${h}%` }}
                       ></div>
@@ -163,36 +167,44 @@ export default async function DashboardPage() {
   );
 }
 
-// 3. Reusable Stats Card Component
+// 3. Updated StatCard with "Light Colored Box" Themes
 function StatCard({ 
   title, 
   value, 
   icon: Icon, 
   trend, 
-  color, 
+  theme, 
   trendColor 
 }: { 
   title: string; 
   value: string; 
   icon: any; 
   trend: string; 
-  color: "blue" | "indigo" | "red" | "green";
+  theme: "blue" | "purple" | "rose" | "emerald";
   trendColor?: string;
 }) {
-  const colors = {
-    blue: "bg-blue-50 text-blue-600",
-    indigo: "bg-indigo-50 text-indigo-600",
-    red: "bg-red-50 text-red-600",
-    green: "bg-green-50 text-green-600",
+  // Define themes for the entire card background
+  const themes = {
+    blue:    "bg-sky-50 border-sky-100",
+    purple:  "bg-violet-50 border-violet-100",
+    rose:    "bg-rose-50 border-rose-100",
+    emerald: "bg-emerald-50 border-emerald-100",
+  };
+
+  const iconColors = {
+    blue:    "bg-sky-200 text-sky-700",
+    purple:  "bg-violet-200 text-violet-700",
+    rose:    "bg-rose-200 text-rose-700",
+    emerald:  "bg-emerald-200 text-emerald-700",
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-shadow">
+    <div className={`p-6 rounded-2xl border transition-shadow hover:shadow-md ${themes[theme]}`}>
       <div className="flex justify-between items-start">
-        <div className={`p-3 rounded-xl ${colors[color]}`}>
+        <div className={`p-3 rounded-xl ${iconColors[theme]}`}>
           <Icon className="w-6 h-6" />
         </div>
-        <div className={`flex items-center text-xs font-medium ${trendColor || "text-green-600"} bg-green-50 px-2 py-1 rounded-full`}>
+        <div className={`flex items-center text-xs font-bold ${trendColor || "text-emerald-700"} bg-white/60 px-2 py-1 rounded-full shadow-sm`}>
            {trend === "Requires Action" ? null : <ArrowUpRight className="w-3 h-3 mr-1" />}
            {trend}
         </div>
