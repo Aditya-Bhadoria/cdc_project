@@ -14,12 +14,10 @@ export function DashboardNav() {
   ];
 
   return (
-    // Increased container padding (px-4) and vertical spacing (space-y-3)
-    <nav className="px-4 space-y-3">
+    // CHANGED: "flex items-center gap-2" makes links horizontal
+    <nav className="flex items-center gap-2">
       {links.map((link) => {
         const Icon = link.icon;
-        
-        // Check if active
         const isActive = link.href === "/dashboard" 
           ? pathname === "/dashboard"
           : pathname.startsWith(link.href);
@@ -28,18 +26,15 @@ export function DashboardNav() {
           <Link
             key={link.href}
             href={link.href}
-            // SPACIOUS STYLING:
-            // 1. px-4 py-3: Bigger click area
-            // 2. gap-4: More space between icon and text
-            // 3. text-base: Slightly larger text
-            className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
+            // CHANGED: Adjusted padding for horizontal bar
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
               isActive
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/20 translate-x-1" // Active: Bright & slightly shifted right
-                : "text-gray-300 hover:bg-slate-800 hover:text-white hover:translate-x-1" // Inactive: Light gray -> White on hover
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20"
+                : "text-slate-400 hover:bg-slate-800 hover:text-white"
             }`}
           >
-            <Icon size={22} className={isActive ? "text-indigo-100" : "text-gray-400 group-hover:text-white transition-colors"} />
-            <span className="font-medium text-base tracking-wide">{link.label}</span>
+            <Icon size={18} className={isActive ? "text-indigo-100" : "text-gray-400 group-hover:text-white"} />
+            <span>{link.label}</span>
           </Link>
         );
       })}
