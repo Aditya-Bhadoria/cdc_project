@@ -1,73 +1,43 @@
-export const dynamic = "force-dynamic";
 import Link from "next/link";
-import { db } from "../../../lib/db"; // Ensure path is correct based on your folder depth
-import { ProductSearch } from "../../../components/dashboard/product-search"; 
-import { DeleteButton } from "../../../components/delete-button"; 
-import { Plus, Edit, PackageX } from "lucide-react";
-import Image from "next/image";
-import { Metadata } from "next";
+import { Plus, Pencil, Trash2, Package } from "lucide-react";
+import { db } from "../../../lib/db"; 
+import { deleteProduct } from "../../../actions/products";
 
-interface ProductsPageProps {
-  searchParams: Promise<{
-    query?: string;
-    page?: string;
-  }>;
-}
+export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Inventory Management | NexusStore",
-  description: "View and manage store inventory.",
-};
-
-export default async function ProductsPage(props: ProductsPageProps) {
-  const searchParams = await props.searchParams;
-  const query = searchParams?.query || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const itemsPerPage = 10;
-
+export default async function InventoryPage() {
   const products = await db.product.findMany({
-    where: {
-      OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { sku: { contains: query, mode: "insensitive" } },
-      ],
-    },
-    take: itemsPerPage,
-    skip: (currentPage - 1) * itemsPerPage,
     orderBy: { createdAt: "desc" },
-  });
-
-  const totalItems = await db.product.count({
-    where: {
-      name: { contains: query, mode: "insensitive" },
-    },
   });
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* Header Bar */}
+      <div className="flex justify-between items-center bg-slate-900 p-4 rounded-xl border border-slate-800">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Inventory Items</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Manage your inventory ({totalItems} total)
-          </p>
+          <h1 className="text-xl font-bold text-white">Inventory Items</h1>
+          <p className="text-sm text-slate-400">Manage your inventory ({products.length} total)</p>
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <ProductSearch />
-          {/* UPDATED LINK: Points to new inventory create path */}
+        <div className="flex gap-3">
+          <input 
+             type="text" 
+             placeholder="Search products..." 
+             className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm w-64 text-white focus:ring-2 focus:ring-emerald-500 outline-none hidden sm:block placeholder:text-slate-600"
+          />
           <Link
             href="/dashboard/inventory/create"
-            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors text-sm font-medium whitespace-nowrap"
+            className="bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/20 text-sm font-medium"
           >
-            <Plus className="w-4 h-4" /> Add Item
+            <Plus size={18} /> Add Item
           </Link>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+      {/* Dark Table */}
+      <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700 font-medium border-b">
+            <thead className="bg-slate-950 text-slate-400 font-medium border-b border-slate-800">
               <tr>
                 <th className="px-6 py-4">Item Details</th>
                 <th className="px-6 py-4">Status</th>
@@ -77,117 +47,88 @@ export default async function ProductsPage(props: ProductsPageProps) {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
-              {products.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                    <div className="flex flex-col items-center gap-2">
-                      <PackageX className="w-8 h-8 text-gray-300" />
-                      <p>No items found matching "{query}"</p>
+            <tbody className="divide-y divide-slate-800">
+              {products.map((product) => (
+                <tr key={product.id} className="hover:bg-slate-800/50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 flex-shrink-0 rounded-lg overflow-hidden border border-slate-700 bg-slate-800">
+                        {product.image ? (
+                          <img 
+                            src={product.image} 
+                            alt={product.name} 
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center">
+                            <Package className="w-5 h-5 text-slate-600" />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-slate-200">{product.name}</p>
+                        <p className="text-xs text-slate-500 font-mono uppercase">
+                          {product.id.slice(0, 8)}...
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                        product.status === "ARCHIVED"
+                          ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          : product.status === "DRAFT"
+                          ? "bg-slate-700/50 text-slate-400 border-slate-600"
+                          : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      }`}
+                    >
+                      {product.status || "ACTIVE"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-slate-300">{product.inventoryCount}</span>
+                      {product.inventoryCount < 10 && (
+                        <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-lg shadow-rose-500/50" title="Low Stock" />
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-slate-400">
+                    {product.category || "Uncategorized"}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-slate-200">
+                    ${Number(product.price).toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        href={`/dashboard/inventory/${product.id}/edit`}
+                        className="p-2 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                      >
+                        <Pencil size={18} />
+                      </Link>
+                      <form action={deleteProduct.bind(null, product.id)}>
+                        <button className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors">
+                          <Trash2 size={18} />
+                        </button>
+                      </form>
                     </div>
                   </td>
                 </tr>
-              ) : (
-                products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-gray-100 border flex items-center justify-center overflow-hidden">
-                          {/* UPDATED: Checks 'image' instead of 'imageUrl' */}
-                          {product.image ? (
-                             // eslint-disable-next-line @next/next/no-img-element
-                            <div className="relative w-10 h-10 rounded-md overflow-hidden border">
-                              <Image 
-                                  src={product.image} 
-                                  alt={product.name} 
-                                  fill 
-                                  className="object-cover"
-                                  sizes="40px"
-                              />
-                            </div>
-                          ) : (
-                            <span className="text-xs text-gray-400">Img</span>
-                          )}
-                        </div>
-                        <div>
-                          <div className="font-medium text-gray-900">{product.name}</div>
-                          <div className="text-xs text-gray-500 uppercase">{product.sku}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusBadge status={product.status} />
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">
-                      <div className="flex items-center gap-2">
-                        {/* UPDATED: Checks 'inventoryCount' */}
-                        <span>{product.inventoryCount}</span>
-                        {product.inventoryCount < 10 && (
-                          <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" title="Low Inventory" />
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 capitalize">
-                      {product.category}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-700">
-                      {/* SAFETY: Convert Decimal to Number */}
-                      ${Number(product.price).toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end items-center gap-2">
-                        {/* UPDATED LINK: Points to new inventory edit path */}
-                        <Link
-                          href={`/dashboard/inventory/${product.id}/edit`}
-                          className="p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
-                        {/* Note: Ensure DeleteButton is updated if it uses specific API paths, otherwise it should just work */}
-                        <DeleteButton id={product.id} />
-                      </div>
-                    </td>
-                  </tr>
-                ))
+              ))}
+              {products.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                    <Package className="w-12 h-12 mx-auto text-slate-700 mb-3" />
+                    <p>No products found. Add your first item!</p>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
         </div>
-        
-        {products.length > 0 && (
-           <div className="p-4 border-t bg-gray-50 flex justify-between items-center text-sm text-gray-500">
-             <span>Page {currentPage}</span>
-             <div className="flex gap-2">
-               {currentPage > 1 && (
-                  <Link href={`?page=${currentPage - 1}&query=${query}`} className="px-3 py-1 border rounded bg-white hover:bg-gray-50">Previous</Link>
-               )}
-               {products.length === itemsPerPage && (
-                  <Link href={`?page=${currentPage + 1}&query=${query}`} className="px-3 py-1 border rounded bg-white hover:bg-gray-50">Next</Link>
-               )}
-             </div>
-           </div>
-        )}
       </div>
     </div>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    ACTIVE: "bg-green-100 text-green-700 border-green-200",
-    DRAFT: "bg-gray-100 text-gray-700 border-gray-200",
-    ARCHIVED: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  };
-
-  const defaultStyle = "bg-gray-100 text-gray-700";
-
-  return (
-    <span
-      className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-        styles[status] || defaultStyle
-      }`}
-    >
-      {status}
-    </span>
   );
 }

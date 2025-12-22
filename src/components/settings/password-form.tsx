@@ -19,7 +19,7 @@ export function PasswordForm({ email }: PasswordFormProps) {
     
     if (result.success) {
       toast.success(result.message);
-      formRef.current?.reset(); // Clear inputs on success
+      formRef.current?.reset();
     } else {
       toast.error(result.message);
     }
@@ -29,34 +29,34 @@ export function PasswordForm({ email }: PasswordFormProps) {
   return (
     <form ref={formRef} action={handleSubmit} className="grid gap-4 max-w-xl">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+        <label className="block text-sm font-medium text-slate-300 mb-1">Current Password</label>
         <input 
           name="currentPassword"
           type="password" 
           required
-          className="w-full p-2 border rounded-md text-gray-900 focus:ring-2 focus:ring-red-500 outline-none" 
+          className="w-full p-2.5 border border-slate-700 bg-slate-950 rounded-lg text-white placeholder-slate-600 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all"
           placeholder="Enter current password"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1">New Password</label>
           <input 
             name="newPassword"
             type="password" 
             required
-            className="w-full p-2 border rounded-md text-gray-900 focus:ring-2 focus:ring-red-500 outline-none" 
+            className="w-full p-2.5 border border-slate-700 bg-slate-950 rounded-lg text-white placeholder-slate-600 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all"
             placeholder="Min 6 chars"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+          <label className="block text-sm font-medium text-slate-300 mb-1">Confirm New Password</label>
           <input 
             name="confirmPassword"
             type="password" 
             required
-            className="w-full p-2 border rounded-md text-gray-900 focus:ring-2 focus:ring-red-500 outline-none" 
+            className="w-full p-2.5 border border-slate-700 bg-slate-950 rounded-lg text-white placeholder-slate-600 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all"
             placeholder="Retype password"
           />
         </div>
@@ -66,7 +66,7 @@ export function PasswordForm({ email }: PasswordFormProps) {
         <button 
           type="submit" 
           disabled={isLoading}
-          className="flex items-center gap-2 border border-red-200 bg-red-50 text-red-700 px-4 py-2 rounded-md hover:bg-red-100 transition-colors disabled:opacity-50 text-sm font-medium"
+          className="flex items-center gap-2 border border-rose-900/50 bg-rose-500/10 text-rose-400 px-4 py-2 rounded-lg hover:bg-rose-500/20 transition-colors disabled:opacity-50 text-sm font-medium"
         >
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
           Update Password

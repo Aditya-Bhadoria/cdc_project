@@ -16,7 +16,6 @@ export function ProfileForm({ initialName, email }: ProfileFormProps) {
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
     const result = await updateProfile(formData);
-    
     if (result.success) {
       toast.success(result.message);
     } else {
@@ -27,30 +26,29 @@ export function ProfileForm({ initialName, email }: ProfileFormProps) {
 
   return (
     <form action={handleSubmit} className="grid gap-4 max-w-xl">
-      {/* Hidden input to identify the user */}
       <input type="hidden" name="currentEmail" value={email} />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+        <label className="block text-sm font-medium text-slate-300 mb-1">Display Name</label>
         <input 
           name="name"
           type="text" 
           defaultValue={initialName}
           required
-          className="w-full p-2 border rounded-md text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none" 
+          className="w-full p-2.5 border border-slate-700 bg-slate-950 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" 
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <label className="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
         <input 
           name="email"
           type="email" 
           defaultValue={email}
           required
-          className="w-full p-2 border rounded-md text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none" 
+          className="w-full p-2.5 border border-slate-700 bg-slate-950 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" 
         />
-        <p className="text-xs text-yellow-600 mt-1">
+        <p className="text-xs text-amber-500/80 mt-1">
           ⚠️ Changing this will require you to use the new email at next login.
         </p>
       </div>
@@ -59,7 +57,7 @@ export function ProfileForm({ initialName, email }: ProfileFormProps) {
         <button 
           type="submit" 
           disabled={isLoading}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50 text-sm font-medium"
+          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-500 transition-colors disabled:opacity-50 text-sm font-medium shadow-lg shadow-emerald-900/20"
         >
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
           Save Changes
