@@ -28,7 +28,8 @@ export default async function EditProductPage({ params }: PageProps) {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <ProductForm initialData={product} isEdit={true} />
+      {/* We pass 'formattedProduct' instead of 'product' to avoid the error */}
+      <ProductForm initialData={formattedProduct} isEdit={true} />
     </div>
   );
 }
