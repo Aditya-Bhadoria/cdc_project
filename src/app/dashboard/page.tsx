@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   });
   
   const lowStockCount = await db.product.count({
-    where: { inventoryCount: { lt: 10 } },
+    where: { inventoryCount: { lt: 15 } },
   });
 
   const allProducts = await db.product.findMany({

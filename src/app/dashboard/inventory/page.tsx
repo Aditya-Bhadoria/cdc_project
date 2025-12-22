@@ -90,7 +90,7 @@ export default async function InventoryPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-slate-300">{product.inventoryCount}</span>
-                      {product.inventoryCount < 20 && (
+                      {product.inventoryCount < 15 && (
                         <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-lg shadow-rose-500/50" title="Low Stock" />
                       )}
                     </div>
