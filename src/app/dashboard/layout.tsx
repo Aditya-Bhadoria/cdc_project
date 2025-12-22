@@ -1,4 +1,3 @@
-// FIXED: Importing from 'nav' instead of 'sidenav'
 import { DashboardNav } from "../../components/dashboard/nav"; 
 import { Store } from "lucide-react"; 
 
@@ -8,8 +7,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      {/* SIDEBAR - Dark Slate Background */}
+    <div className="flex min-h-screen bg-gray-50">
+      {/* SIDEBAR - Fixed Position */}
       <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col fixed inset-y-0 z-50">
         
         {/* Logo Section */}
@@ -40,8 +39,12 @@ export default function DashboardLayout({
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 md:ml-64 bg-gray-50">
-        {children}
+      {/* md:ml-64 -> Pushes content right to not hide behind sidebar */}
+      {/* p-8 -> Adds the PADDING you need on all sides */}
+      <main className="flex-1 md:ml-64 p-8">
+        <div className="max-w-7xl mx-auto">
+          {children}
+        </div>
       </main>
     </div>
   );
