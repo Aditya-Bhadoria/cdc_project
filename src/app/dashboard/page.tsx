@@ -1,4 +1,5 @@
 import { db } from "../../lib/db";
+import { SalesChart } from "../../components/dashboard/sales-chart"; // Import the new component
 import { 
   Package, 
   TrendingUp, 
@@ -59,21 +60,21 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Grid - NOW WITH LIGHT COLORED BOXES */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title="Total Items" 
           value={totalItems.toString()} 
           icon={Package} 
           trend="+12%"
-          theme="blue" // Light Blue Box
+          theme="blue"
         />
         <StatCard 
           title="Total Inventory" 
           value={inventoryStats._sum.inventoryCount?.toString() || "0"} 
           icon={TrendingUp} 
           trend="+5.2%"
-          theme="purple" // Light Purple Box
+          theme="purple"
         />
         <StatCard 
           title="Low Stock Alerts" 
@@ -81,14 +82,14 @@ export default async function DashboardPage() {
           icon={AlertTriangle} 
           trend="Requires Action"
           trendColor="text-rose-600"
-          theme="rose" // Light Red/Rose Box
+          theme="rose"
         />
         <StatCard 
           title="Total Valuation" 
           value={`$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
           icon={DollarSign} 
           trend="+2.4%"
-          theme="emerald" // Light Green Box
+          theme="emerald"
         />
       </div>
 
@@ -121,53 +122,16 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Sales Performance - FIXED VISIBILITY */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border shadow-sm p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-semibold text-gray-900">Weekly Performance</h3>
-            <select className="text-sm border-none bg-gray-50 rounded-md px-2 py-1 text-gray-500 focus:ring-0 cursor-pointer hover:bg-gray-100">
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
-            </select>
-          </div>
-          
-          <div className="h-64 flex items-end justify-between gap-3 sm:gap-4 mt-8">
-             {/* Render Bars */}
-             {[45, 78, 52, 34, 67, 89, 56].map((h, i) => {
-               const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-               const isPeak = i === 5; // Highlight Saturday as peak
-               
-               return (
-                 <div key={i} className="flex-1 flex flex-col items-center gap-3 h-full justify-end group cursor-default">
-                   <div className="relative w-full flex items-end justify-center h-full">
-                      {/* Tooltip on Hover */}
-                      <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs rounded py-1.5 px-3 whitespace-nowrap z-10 pointer-events-none transform translate-y-2 group-hover:translate-y-0 duration-200">
-                        ${h * 120} Sales
-                        <div className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-                      </div>
-                      
-                      {/* BAR - Using stronger colors (Sky-300/500) so they are visible */}
-                      <div 
-                        className={`w-full max-w-[44px] rounded-t-lg transition-all duration-300 ${
-                          isPeak 
-                            ? "bg-sky-500 shadow-md shadow-sky-200" // Darker blue for peak
-                            : "bg-sky-200 hover:bg-sky-300"          // Lighter blue for others
-                        }`}
-                        style={{ height: `${h}%` }}
-                      ></div>
-                   </div>
-                   <span className="text-xs text-gray-400 font-medium">{days[i]}</span>
-                 </div>
-               )
-             })}
-          </div>
+        {/* Sales Performance - NOW INTERACTIVE */}
+        <div className="lg:col-span-2">
+          <SalesChart />
         </div>
       </div>
     </div>
   );
 }
 
-// 3. Updated StatCard with "Light Colored Box" Themes
+// Stats Card Component
 function StatCard({ 
   title, 
   value, 
@@ -183,7 +147,6 @@ function StatCard({
   theme: "blue" | "purple" | "rose" | "emerald";
   trendColor?: string;
 }) {
-  // Define themes for the entire card background
   const themes = {
     blue:    "bg-sky-50 border-sky-100",
     purple:  "bg-violet-50 border-violet-100",
