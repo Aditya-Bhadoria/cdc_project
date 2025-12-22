@@ -1,5 +1,5 @@
 import { db } from "../../lib/db";
-import { SalesChart } from "../../components/dashboard/sales-chart"; // Import the new component
+import { SalesChart } from "../../components/dashboard/sales-chart";
 import { 
   Package, 
   TrendingUp, 
@@ -40,18 +40,20 @@ export default async function DashboardPage() {
 
   // 2. UI Components
   return (
-    <div className="space-y-8">
+    // UPDATED: Added gradient background and padding here
+    <div className="space-y-8 bg-gradient-to-r from-gray-50 to-gray-200 p-8 min-h-screen">
+      
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-300 pb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
-          <p className="text-gray-500 mt-2 flex items-center gap-2">
+          <p className="text-gray-600 mt-2 flex items-center gap-2">
             <CalendarDays className="w-4 h-4" />
             Here is what's happening with your inventory today.
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-white text-gray-700 px-4 py-2 rounded-lg border shadow-sm text-sm font-medium hover:bg-gray-50 transition-colors">
+          <button className="bg-white/80 backdrop-blur-sm text-gray-700 px-4 py-2 rounded-lg border shadow-sm text-sm font-medium hover:bg-white transition-colors">
             Download Report
           </button>
           <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md shadow-indigo-200 text-sm font-medium hover:bg-indigo-700 transition-colors">
@@ -96,7 +98,7 @@ export default async function DashboardPage() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Category Chart */}
-        <div className="lg:col-span-1 bg-white rounded-2xl border shadow-sm p-6 flex flex-col">
+        <div className="lg:col-span-1 bg-white/80 backdrop-blur-md rounded-2xl border shadow-sm p-6 flex flex-col">
           <h3 className="font-semibold text-gray-900 mb-6">Inventory by Category</h3>
           <div className="flex-1 flex flex-col justify-center space-y-5">
             {Object.entries(categoryCount).map(([cat, count], index) => {
@@ -108,7 +110,7 @@ export default async function DashboardPage() {
                  <div key={cat} className="group">
                    <div className="flex justify-between text-sm mb-1.5">
                      <span className="text-gray-700 font-medium capitalize">{cat}</span>
-                     <span className="text-gray-400 text-xs">{count} items ({percentage}%)</span>
+                     <span className="text-gray-500 text-xs">{count} items ({percentage}%)</span>
                    </div>
                    <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
                      <div 
@@ -122,9 +124,12 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Sales Performance - NOW INTERACTIVE */}
+        {/* Sales Performance */}
         <div className="lg:col-span-2">
-          <SalesChart />
+          {/* We wrap the chart in a slight transparency to blend with the gradient */}
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border shadow-sm h-full">
+             <SalesChart />
+          </div>
         </div>
       </div>
     </div>
@@ -148,10 +153,10 @@ function StatCard({
   trendColor?: string;
 }) {
   const themes = {
-    blue:    "bg-sky-50 border-sky-100",
-    purple:  "bg-violet-50 border-violet-100",
-    rose:    "bg-rose-50 border-rose-100",
-    emerald: "bg-emerald-50 border-emerald-100",
+    blue:    "bg-sky-50/80 border-sky-100 backdrop-blur-sm",
+    purple:  "bg-violet-50/80 border-violet-100 backdrop-blur-sm",
+    rose:    "bg-rose-50/80 border-rose-100 backdrop-blur-sm",
+    emerald: "bg-emerald-50/80 border-emerald-100 backdrop-blur-sm",
   };
 
   const iconColors = {
