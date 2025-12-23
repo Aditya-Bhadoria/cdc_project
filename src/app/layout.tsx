@@ -5,8 +5,8 @@ import "./globals.css"; // imports Tailwind CSS
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NexusStore",
-  description: "Inventory Management System",
+  title: "LeafStore",
+  description: "Efficient product tracking and inventory management system",
 };
 
 export default function RootLayout({
