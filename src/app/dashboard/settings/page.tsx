@@ -2,6 +2,7 @@ import { db } from "../../../lib/db";
 import { User, Shield, Store } from "lucide-react";
 import { ProfileForm } from "../../../components/settings/profile-form";
 import { PasswordForm } from "../../../components/settings/password-form";
+import { LogoutButton } from "../../../components/dashboard/logout-button"; 
 
 export const dynamic = "force-dynamic";
 
@@ -84,6 +85,15 @@ export default async function SettingsPage() {
           
           <PasswordForm email={user.email} />
         </div>
+
+        <div className="bg-slate-900 rounded-xl border border-slate-800 p-6 flex items-center justify-between">
+           <div>
+              <h2 className="text-lg font-semibold text-white">Sign Out</h2>
+              <p className="text-sm text-slate-400">Securely log out of your session</p>
+           </div>
+           <LogoutButton />
+        </div>
+
       </div>
     </div>
   );
