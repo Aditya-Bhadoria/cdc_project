@@ -4,7 +4,8 @@ import { useState } from "react";
 import { updateProfile } from "../../actions/user";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface ProfileFormProps {
   initialName: string;
@@ -13,13 +14,18 @@ interface ProfileFormProps {
 
 export function ProfileForm({ initialName, email }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter(); // 2. Initialize router
+  const router = useRouter();
+  const { update } = useSession();
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
+    const newName = formData.get("name") as string; 
+    
     const result = await updateProfile(formData);
     
     if (result.success) {
+      await update({ name: newName });
+      
       toast.success(result.message);
       router.refresh(); 
     } else {

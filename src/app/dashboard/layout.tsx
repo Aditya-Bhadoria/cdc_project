@@ -1,5 +1,6 @@
 import { DashboardNav } from "../../components/dashboard/nav"; 
-import { Leaf, User } from "lucide-react"; 
+import { Leaf } from "lucide-react"; 
+import { UserProfile } from "../../components/dashboard/user-profile";
 
 export default function DashboardLayout({
   children,
@@ -23,15 +24,7 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex flex-col items-end">
-              <span className="text-sm font-medium text-white">Admin User</span>
-              <span className="text-xs text-slate-400">admin@example.com</span>
-            </div>
-            <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center text-white">
-              <User size={16} />
-            </div>
-          </div>
+          <UserProfile />
 
         </div>
       </header>
