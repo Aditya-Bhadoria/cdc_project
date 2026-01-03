@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { db } from "../../lib/db";
-import { OverviewCharts } from "../../components/dashboard/overview-charts"; 
+import { SalesChart } from "../../components/dashboard/sales-chart";
 import { 
   Package, 
   TrendingUp, 
@@ -24,20 +24,12 @@ export default async function DashboardPage() {
   });
 
   const allProducts = await db.product.findMany({
-    orderBy: { createdAt: "desc" },
-    select: { name: true, price: true, inventoryCount: true, category: true },
+    select: { price: true, inventoryCount: true, category: true },
   });
 
-  // Safe Calculation for Total Value
   const totalValue = allProducts.reduce((acc, item) => {
     return acc + (Number(item.price) * item.inventoryCount);
   }, 0);
-
-  // Prepare Graph Data
-  const graphData = allProducts.map(item => ({
-    name: item.name,
-    total: Number(item.price) * item.inventoryCount,
-  })).slice(0, 10);
 
   const categoryCount: Record<string, number> = {};
   allProducts.forEach((p) => {
@@ -102,14 +94,8 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
-        <div className="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col">
-            <h3 className="font-semibold text-white mb-6">Inventory Value Distribution</h3>
-             {/* FIX: Changed prop name from 'data' to 'categoryData' */}
-            <OverviewCharts categoryData={graphData} />
-        </div>
-
-        <div className="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col">
           <h3 className="font-semibold text-white mb-6">Inventory by Category</h3>
           <div className="flex-1 flex flex-col justify-center space-y-5">
             {Object.entries(categoryCount).map(([cat, count], index) => {
@@ -132,6 +118,12 @@ export default async function DashboardPage() {
                  </div>
                )
             })}
+          </div>
+        </div>
+
+        <div className="lg:col-span-2">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl h-full p-6">
+             <SalesChart />
           </div>
         </div>
       </div>
@@ -166,7 +158,7 @@ function StatCard({
     blue:    "bg-sky-500/10 text-sky-400",
     purple:  "bg-violet-500/10 text-violet-400",
     rose:    "bg-rose-500/10 text-rose-400",
-    emerald: "bg-emerald-500/10 text-emerald-400",
+    emerald:  "bg-emerald-500/10 text-emerald-400",
   };
 
   return (
